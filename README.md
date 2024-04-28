@@ -127,6 +127,13 @@ If you want to customize the way, call `setup` or write them in `opts` (for
 }
 ```
 
+## Command
+
+### `:ObsidianKensaku`
+
+Open the picker like `:ObsidianSearch`. You can search with Romaji and do the
+same things as in `:ObsidianSearch`.
+
 ## Options
 
 ### `query_filter`
