@@ -1,4 +1,5 @@
-local telescope = require "telescope.builtin"
+local telescope = require "telescope"
+local telescope_builtin = require "telescope.builtin"
 local telescope_actions = require "telescope.actions"
 local actions_state = require "telescope.actions.state"
 
@@ -149,8 +150,17 @@ KensakuPicker.grep = function(self, opts)
     return true
   end
 
+  local egrepify
+  if config.picker == "egrepify" then
+    local ext = telescope.extensions.egrepify
+    if not ext then
+      error "telescope-egrepify is not installed"
+    end
+    egrepify = ext.egrepify
+  end
+
   if opts.query and string.len(opts.query) > 0 then
-    telescope.grep_string {
+    telescope_builtin.grep_string {
       prompt_title = prompt_title,
       cwd = tostring(cwd),
       vimgrep_arguments = self:_build_grep_cmd(),
@@ -158,7 +168,8 @@ KensakuPicker.grep = function(self, opts)
       attach_mappings = attach_mappings,
     }
   else
-    telescope.live_grep {
+    local picker = egrepify or telescope_builtin.live_grep
+    picker {
       prompt_title = prompt_title,
       cwd = tostring(cwd),
       vimgrep_arguments = self:_build_grep_cmd(),

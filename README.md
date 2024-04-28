@@ -1,6 +1,6 @@
 # obsidian-kensaku.nvim
 
-<img alt="demo" width="640" src="demo.png">
+<img alt="demo-egrepify" width="640" src="demo-egrepify.png">
 
 Search the vault with Romaji powered by [epwalsh/obsidian.nvim][].
 
@@ -24,11 +24,16 @@ This plugin adds a command `:ObsidianKensaku`. This command looks like
   - [lambdalisue/kensaku.vim][]
   - `cmigemo` executable.
   - or another one you prefer.
+* [fdschmidt93/telescope-egrepify.nvim][] _(optional)_
+  - telescope has a bug (https://github.com/nvim-telescope/telescope.nvim/issues/2272)
+    that it cannot highlight properly with string matched by regex. I recommend
+    you to use telescope-egrepify for this.
 
 [nvim-telescope/telescope.nvim]: https://github.com/nvim-telescope/telescope.nvim
 [ibhagwan/fzf-lua]: https://github.com/ibhagwan/fzf-lua
 [echasnovski/mini.pick]: https://github.com/echasnovski/mini.pick
 [lambdalisue/kensaku.vim]: https://github.com/lambdalisue/kensaku.vim
+[fdschmidt93/telescope-egrepify.nvim]: https://github.com/fdschmidt93/telescope-egrepify.nvim
 
 ## Install
 
@@ -169,6 +174,13 @@ Path for `cmigemo` executable. This will be used only if `query_filter` is
 [lua/obsidian-kensaku/config.lua]: lua/obsidian-kensaku/config.lua
 
 Path for `migemo-dict`. This will be used only if `query_filter` is `"cmigemo"`.
+
+### `picker`
+
+* default: `"default"`
+* type: `"default"|"egrepify"`
+
+Use [fdschmidt93/telescope-egrepify.nvim][] instead of telescope's builtin.
 
 ## LICENSE
 

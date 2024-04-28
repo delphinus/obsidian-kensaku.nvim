@@ -5,11 +5,13 @@ local filters = require "obsidian-kensaku.filters"
 ---@class obsidian-kensaku.config.SetupOpts
 ---@field cmigemo_executable? string default: "cmigemo"
 ---@field migemo_dict_path? string default: see README
+---@field picker? "default"|"egrepify" default: "default"
 ---@field query_filter? "kensaku"|"cmigemo"|fun(query: string): string default: "kensaku"
 
 ---@class obsidian-kensaku.config
 ---@field cmigemo_executable string
 ---@field migemo_dict_path string
+---@field picker "default"|"egrepify"
 ---@field query_filter fun(query: string): string
 local config = {}
 
@@ -69,6 +71,8 @@ config.normalize = (function()
     else
       error "Invalid opts.query_filter"
     end
+
+    config.picker = options.picker
 
     return config
   end
