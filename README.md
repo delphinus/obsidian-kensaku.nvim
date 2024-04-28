@@ -133,7 +133,7 @@ If you want to customize the way, call `setup` or write them in `opts` (for
 * type: `"kensaku"|"cmigemo"|fun(query: string): string`
 
 You can choose the way to convert roma-ji into regex. It has pre-defined
-filters for [lambdalisue/kensaku.vim] and `cmigemo`, but you can defined your
+filters for [lambdalisue/kensaku.vim] and `cmigemo`, but you can define your
 own way to do this.
 
 ```lua
