@@ -1,6 +1,6 @@
 # obsidian-kensaku.nvim
 
-[!demo.png]
+![demo](demo.png)
 
 Search the vault with roma-ji powered by [epwalsh/obsidian.nvim][].
 
