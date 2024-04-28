@@ -79,7 +79,7 @@ If you use kensaku.vim (the default way), you can set simply like this below.
   opts = {
     callbacks = {
       post_setup = function(client)
-        require("obsidian-kensaku")(client),
+        require "obsidian-kensaku"(client),
       end,
     },
   },
@@ -118,7 +118,7 @@ If you want to customize the way, call `setup` or write them in `opts` (for
   opts = {
     callbacks = {
       post_setup = function(client)
-        require("obsidian-kensaku")(client),
+        require "obsidian-kensaku"(client),
       end,
     },
   },
