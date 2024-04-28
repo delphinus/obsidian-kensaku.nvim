@@ -2,14 +2,16 @@
 
 <img alt="demo" width="640" src="demo.png">
 
-Search the vault with roma-ji powered by [epwalsh/obsidian.nvim][].
+Search the vault with Romaji powered by [epwalsh/obsidian.nvim][].
+
+ローマ字を使って [epwalsh/obsidian.nvim][] の文書を検索します。
 
 [epwalsh/obsidian.nvim]: https://github.com/epwalsh/obsidian.nvim
 
 ## What's this?
 
 This plugin adds a command `:ObsidianKensaku`. This command looks like
-`:ObsidianSearch` but you can use roma-ji to search the vault.
+`:ObsidianSearch` but you can use Romaji to search the vault.
 
 ## Requirements
 
@@ -18,7 +20,7 @@ This plugin adds a command `:ObsidianKensaku`. This command looks like
   - obsidian.nvim supports telescope, [ibhagwan/fzf-lua][] and
     [echasnovski/mini.pick][], but obsidian-kensaku.nvim supports telescope.nvim
     only.
-* Converter for roma-ji. You needs one of below.
+* Converter for Romaji. You needs one of below.
   - [lambdalisue/kensaku.vim][]
   - `cmigemo` executable.
   - or another one you prefer.
@@ -30,7 +32,7 @@ This plugin adds a command `:ObsidianKensaku`. This command looks like
 
 ## Install
 
-### Set up converter for roma-ji
+### Set up converter for Romaji
 
 You can choose one.
 
@@ -132,7 +134,7 @@ If you want to customize the way, call `setup` or write them in `opts` (for
 * default: `"kensaku"`
 * type: `"kensaku"|"cmigemo"|fun(query: string): string`
 
-You can choose the way to convert roma-ji into regex. It has pre-defined
+You can choose the way to convert Romaji into regex. It has pre-defined
 filters for [lambdalisue/kensaku.vim] and `cmigemo`, but you can define your
 own way to do this.
 
