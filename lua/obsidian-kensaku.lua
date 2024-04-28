@@ -1,6 +1,6 @@
 ---@class obsidian-kensaku
 ---@field setup_called boolean
----@field setup fun(opts: obsidian-kensaku.config.SetupOpts)
+---@field setup fun(opts?: obsidian-kensaku.config.SetupOpts)
 ---@overload fun(client: obsidian.Client)
 
 return setmetatable({ setup_called = false }, {
@@ -25,4 +25,4 @@ return setmetatable({ setup_called = false }, {
     end
     error("Invalid key: " .. key)
   end,
-})
+}) --[[@as obsidian-kensaku]]
