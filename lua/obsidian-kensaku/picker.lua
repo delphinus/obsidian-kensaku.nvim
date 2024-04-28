@@ -149,20 +149,13 @@ KensakuPicker.grep = function(self, opts)
     return true
   end
 
-  ---@param prompt string
-  ---@return { prompt: string }
-  local function on_input_filter_cb(prompt)
-    return { prompt = config.query_filter(prompt) }
-  end
-
   if opts.query and string.len(opts.query) > 0 then
     telescope.grep_string {
       prompt_title = prompt_title,
       cwd = tostring(cwd),
       vimgrep_arguments = self:_build_grep_cmd(),
-      search = opts.query,
+      search = config.query_filter(opts.query),
       attach_mappings = attach_mappings,
-      on_input_filter_cb = on_input_filter_cb,
     }
   else
     telescope.live_grep {
@@ -170,7 +163,11 @@ KensakuPicker.grep = function(self, opts)
       cwd = tostring(cwd),
       vimgrep_arguments = self:_build_grep_cmd(),
       attach_mappings = attach_mappings,
-      on_input_filter_cb = on_input_filter_cb,
+      ---@param prompt string
+      ---@return { prompt: string }
+      on_input_filter_cb = function(prompt)
+        return { prompt = config.query_filter(prompt) }
+      end,
     }
   end
 end
