@@ -127,6 +127,36 @@ local function attach_picker_mappings(map, opts)
   end
 end
 
+---@param opts obsidian.PickerFindOpts|? Options.
+KensakuPicker.find_files = function(self, opts)
+  opts = opts or {}
+
+  local prompt_title = self:_build_prompt {
+    prompt_title = opts.prompt_title,
+    query_mappings = opts.query_mappings,
+    selection_mappings = opts.selection_mappings,
+  }
+
+  telescope_builtin.find_files {
+    prompt_title = prompt_title,
+    cwd = opts.dir and tostring(opts.dir) or tostring(self.client.dir),
+    find_command = self:_build_find_cmd(),
+    sorter = require "obsidian-kensaku.regex_sorter",
+    on_input_filter_cb = function(prompt)
+      return { prompt = vim.fn["kensaku#query"](prompt, { rxop = vim.g["kensaku#rxop#vim"] }) }
+    end,
+    attach_mappings = function(_, map)
+      attach_picker_mappings(map, {
+        entry_key = "path",
+        callback = opts.callback,
+        query_mappings = opts.query_mappings,
+        selection_mappings = opts.selection_mappings,
+      })
+      return true
+    end,
+  }
+end
+
 ---@param opts obsidian.PickerGrepOpts|? Options.
 KensakuPicker.grep = function(self, opts)
   opts = opts or {}
