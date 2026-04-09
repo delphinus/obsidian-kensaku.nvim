@@ -6,12 +6,14 @@ local filters = require "obsidian-kensaku.filters"
 ---@field cmigemo_executable? string default: "cmigemo"
 ---@field migemo_dict_path? string default: see README
 ---@field picker? "default"|"egrepify" default: "default"
+---@field previewer? fun(): table function that returns a telescope previewer
 ---@field query_filter? "kensaku"|"cmigemo"|fun(query: string): string default: "kensaku"
 
 ---@class obsidian-kensaku.config
 ---@field cmigemo_executable string
 ---@field migemo_dict_path string
 ---@field picker "default"|"egrepify"
+---@field previewer? fun(): table
 ---@field query_filter fun(query: string): string
 local config = {}
 
@@ -73,6 +75,7 @@ config.normalize = (function()
     end
 
     config.picker = options.picker
+    config.previewer = options.previewer
 
     return config
   end
