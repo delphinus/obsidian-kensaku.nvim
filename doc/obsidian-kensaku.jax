@@ -155,6 +155,22 @@ picker ~
 	telescope-egrepify.nvim を使用し、正規表現のハイライトが改
 	善されます。
 
+						    *obsidian-kensaku-previewer*
+previewer ~
+	型: `fun(): table`
+	デフォルト: `nil`
+
+	カスタム telescope プレビューアを返す関数。設定すると、すべ
+	てのピッカーコマンドで使用されます。
+
+	md-render.nvim との連携例: >lua
+	    {
+	      previewer = function()
+	        return require("md-render.telescope").previewer()
+	      end,
+	    }
+<
+
 ==============================================================================
 ライセンス					      *obsidian-kensaku-license*
 

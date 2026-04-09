@@ -154,6 +154,22 @@ picker ~
 	telescope-egrepify.nvim, which provides better regex
 	highlighting.
 
+						    *obsidian-kensaku-previewer*
+previewer ~
+	Type: `fun(): table`
+	Default: `nil`
+
+	A function that returns a custom telescope previewer. When
+	set, it is used for all picker commands.
+
+	Example with md-render.nvim: >lua
+	    {
+	      previewer = function()
+	        return require("md-render.telescope").previewer()
+	      end,
+	    }
+<
+
 ==============================================================================
 LICENSE						      *obsidian-kensaku-license*
 

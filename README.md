@@ -188,6 +188,22 @@ Path for `migemo-dict`. This will be used only if `query_filter` is `"cmigemo"`.
 
 Use [fdschmidt93/telescope-egrepify.nvim][] instead of telescope's builtin.
 
+### `previewer`
+
+* default: `nil`
+* type: `fun(): table`
+
+A function that returns a custom telescope previewer. When set, it is used
+for all picker commands.
+
+```lua
+{
+  previewer = function()
+    return require("md-render.telescope").previewer()
+  end,
+}
+```
+
 ## LICENSE
 
 MIT license.

@@ -140,6 +140,7 @@ KensakuPicker.find_files = function(self, opts)
   telescope_builtin.find_files {
     prompt_title = prompt_title,
     cwd = opts.dir and tostring(opts.dir) or tostring(self.client.dir),
+    previewer = config.previewer and config.previewer() or nil,
     find_command = self:_build_find_cmd(),
     sorter = require "obsidian-kensaku.regex_sorter",
     on_input_filter_cb = function(prompt)
