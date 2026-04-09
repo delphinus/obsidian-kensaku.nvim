@@ -1,0 +1,164 @@
+*obsidian-kensaku.txt*	ローマ字で vault を検索
+
+==============================================================================
+目次					     *obsidian-kensaku-contents*
+
+    1. はじめに ............................ |obsidian-kensaku-introduction|
+    2. 必要なもの .......................... |obsidian-kensaku-requirements|
+    3. インストール ............................ |obsidian-kensaku-install|
+    4. コマンド ............................ |obsidian-kensaku-commands|
+    5. オプション .......................... |obsidian-kensaku-options|
+    6. ライセンス .......................... |obsidian-kensaku-license|
+
+==============================================================================
+はじめに				 *obsidian-kensaku-introduction*
+
+obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加する
+プラグインです。以下の二つのコマンドを提供します。
+
+- |:ObsidianKensaku| ノートの内容を検索 (|:ObsidianSearch| 相当)
+- |:ObsidianQuickKensaku| ファイル名でノートを検索
+  (|:ObsidianQuickSwitch| 相当)
+
+ローマ字入力を kensaku.vim や cmigemo で正規表現に変換し、入力メソッ
+ドを切り替えずに日本語テキストを検索できます。
+
+==============================================================================
+必要なもの				 *obsidian-kensaku-requirements*
+
+- Neovim >= 0.10.0
+- epwalsh/obsidian.nvim
+    https://github.com/epwalsh/obsidian.nvim
+- nvim-telescope/telescope.nvim
+    https://github.com/nvim-telescope/telescope.nvim
+- 以下のローマ字変換器のいずれか:
+  - lambdalisue/kensaku.vim (vim-denops/denops.vim が必要)
+      https://github.com/lambdalisue/kensaku.vim
+  - `cmigemo` 実行ファイル
+  - 独自の変換関数
+- fdschmidt93/telescope-egrepify.nvim (任意、推奨)
+    https://github.com/fdschmidt93/telescope-egrepify.nvim
+
+==============================================================================
+インストール				      *obsidian-kensaku-install*
+
+kensaku.vim を使う場合の lazy.nvim 設定例 (デフォルト): >lua
+    {
+      "epwalsh/obsidian.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "delphinus/obsidian-kensaku.nvim",
+      },
+      opts = {
+        callbacks = {
+          post_setup = function(client)
+            require "obsidian-kensaku"(client)
+          end,
+        },
+      },
+    }
+<
+重要: `opts.callbacks.post_setup` 内で呼び出す必要があります。
+
+cmigemo を使う場合: >lua
+    {
+      "epwalsh/obsidian.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        {
+          "delphinus/obsidian-kensaku.nvim",
+          opts = {
+            query_filter = "cmigemo",
+            cmigemo_executable = "/path/to/cmigemo",
+            migemo_dict_path = "/path/to/migemo-dict",
+          },
+        },
+      },
+      opts = {
+        callbacks = {
+          post_setup = function(client)
+            require "obsidian-kensaku"(client)
+          end,
+        },
+      },
+    }
+<
+
+==============================================================================
+コマンド				     *obsidian-kensaku-commands*
+
+:ObsidianKensaku [query]			     *:ObsidianKensaku*
+
+	ローマ字で vault のノート内容を検索します。
+	|:ObsidianSearch| と同様に動作しますが、ローマ字入力を正規
+	表現に変換して日本語テキストをマッチングします。[query] を
+	指定すると初期検索クエリとして使用されます。
+
+:ObsidianQuickKensaku				*:ObsidianQuickKensaku*
+
+	ローマ字でファイル名からノートを検索します。
+	|:ObsidianQuickSwitch| と同様に動作しますが、ローマ字入力を
+	正規表現に変換して日本語テキストをマッチングします。
+
+==============================================================================
+オプション				      *obsidian-kensaku-options*
+
+setup 関数または lazy.nvim の `opts` でオプションを設定できます: >lua
+    require("obsidian-kensaku").setup {
+      query_filter = "kensaku",
+      picker = "egrepify",
+    }
+<
+					 *obsidian-kensaku-query_filter*
+query_filter ~
+	型: `"kensaku"` | `"cmigemo"` | `fun(query: string): string`
+	デフォルト: `"kensaku"`
+
+	ローマ字を正規表現に変換する方法を指定します。
+
+	`"kensaku"`    lambdalisue/kensaku.vim を使用。
+	`"cmigemo"`    cmigemo 実行ファイルを使用。
+	関数         クエリ文字列を受け取り正規表現を返す独自関数。
+
+	独自関数の使用例: >lua
+	    {
+	      query_filter = function(query)
+	        return some_way_to_create_regex(query)
+	      end,
+	    }
+<
+				      *obsidian-kensaku-cmigemo_executable*
+cmigemo_executable ~
+	型: `string`
+	デフォルト: `"cmigemo"`
+
+	cmigemo 実行ファイルのパス。
+	|obsidian-kensaku-query_filter| が `"cmigemo"` の場合のみ
+	使用されます。
+
+					*obsidian-kensaku-migemo_dict_path*
+migemo_dict_path ~
+	型: `string`
+	デフォルト: (自動検出)
+
+	migemo 辞書ファイルのパス。
+	|obsidian-kensaku-query_filter| が `"cmigemo"` の場合のみ
+	使用されます。指定しない場合、プラグインが自動的に検索しま
+	す。
+
+					       *obsidian-kensaku-picker*
+picker ~
+	型: `"default"` | `"egrepify"`
+	デフォルト: `"default"`
+
+	使用する telescope ピッカー。 `"egrepify"` に設定すると
+	telescope-egrepify.nvim を使用し、正規表現のハイライトが改
+	善されます。
+
+==============================================================================
+ライセンス				      *obsidian-kensaku-license*
+
+MIT ライセンス。
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
