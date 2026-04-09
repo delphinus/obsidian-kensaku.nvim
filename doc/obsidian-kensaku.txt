@@ -1,0 +1,163 @@
+*obsidian-kensaku.txt*	Search vault with Romaji
+
+==============================================================================
+CONTENTS					     *obsidian-kensaku-contents*
+
+Introduction					 |obsidian-kensaku-introduction|
+Requirements					 |obsidian-kensaku-requirements|
+Installation					      |obsidian-kensaku-install|
+Commands					     |obsidian-kensaku-commands|
+Options						      |obsidian-kensaku-options|
+License						      |obsidian-kensaku-license|
+
+==============================================================================
+INTRODUCTION					 *obsidian-kensaku-introduction*
+
+obsidian-kensaku.nvim adds Romaji search capabilities to |obsidian.nvim|.
+It provides two commands:
+
+- |:ObsidianKensaku| searches note contents (like |:ObsidianSearch|)
+- |:ObsidianQuickKensaku| searches notes by file name
+  (like |:ObsidianQuickSwitch|)
+
+Romaji input is converted to regex using kensaku.vim or cmigemo, enabling
+you to search Japanese text without switching input methods.
+
+==============================================================================
+REQUIREMENTS					 *obsidian-kensaku-requirements*
+
+- Neovim >= 0.10.0
+- epwalsh/obsidian.nvim
+    https://github.com/epwalsh/obsidian.nvim
+- nvim-telescope/telescope.nvim
+    https://github.com/nvim-telescope/telescope.nvim
+- One of the following Romaji converters:
+  - lambdalisue/kensaku.vim (requires vim-denops/denops.vim)
+      https://github.com/lambdalisue/kensaku.vim
+  - `cmigemo` executable
+  - A custom converter function
+- fdschmidt93/telescope-egrepify.nvim (optional, recommended)
+    https://github.com/fdschmidt93/telescope-egrepify.nvim
+
+==============================================================================
+INSTALLATION					      *obsidian-kensaku-install*
+
+Example configuration with lazy.nvim using kensaku.vim (the default): >lua
+    {
+      "epwalsh/obsidian.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "delphinus/obsidian-kensaku.nvim",
+      },
+      opts = {
+        callbacks = {
+          post_setup = function(client)
+            require "obsidian-kensaku"(client)
+          end,
+        },
+      },
+    }
+<
+IMPORTANT: You must call this plugin in `opts.callbacks.post_setup`.
+
+If you want to use cmigemo instead of kensaku.vim: >lua
+    {
+      "epwalsh/obsidian.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        {
+          "delphinus/obsidian-kensaku.nvim",
+          opts = {
+            query_filter = "cmigemo",
+            cmigemo_executable = "/path/to/cmigemo",
+            migemo_dict_path = "/path/to/migemo-dict",
+          },
+        },
+      },
+      opts = {
+        callbacks = {
+          post_setup = function(client)
+            require "obsidian-kensaku"(client)
+          end,
+        },
+      },
+    }
+<
+
+==============================================================================
+COMMANDS					     *obsidian-kensaku-commands*
+
+:ObsidianKensaku [query]				      *:ObsidianKensaku*
+
+	Search vault note contents with Romaji. Works like
+	|:ObsidianSearch| but converts Romaji input to regex for
+	Japanese text matching. If [query] is given, it is used as the
+	initial search query.
+
+:ObsidianQuickKensaku					 *:ObsidianQuickKensaku*
+
+	Search vault notes by file name with Romaji. Works like
+	|:ObsidianQuickSwitch| but converts Romaji input to regex for
+	Japanese text matching.
+
+==============================================================================
+OPTIONS						      *obsidian-kensaku-options*
+
+Options can be passed to the setup function or as `opts` in lazy.nvim: >lua
+    require("obsidian-kensaku").setup {
+      query_filter = "kensaku",
+      picker = "egrepify",
+    }
+<
+						 *obsidian-kensaku-query_filter*
+query_filter ~
+	Type: `"kensaku"` | `"cmigemo"` | `fun(query: string): string`
+	Default: `"kensaku"`
+
+	The method to convert Romaji into regex.
+
+	`"kensaku"`    Use lambdalisue/kensaku.vim.
+	`"cmigemo"`    Use the cmigemo executable.
+	function     A custom function that takes a query string and
+	             returns a regex string.
+
+	Example with a custom function: >lua
+	    {
+	      query_filter = function(query)
+	        return some_way_to_create_regex(query)
+	      end,
+	    }
+<
+					   *obsidian-kensaku-cmigemo_executable*
+cmigemo_executable ~
+	Type: `string`
+	Default: `"cmigemo"`
+
+	Path to the cmigemo executable. Only used when
+	|obsidian-kensaku-query_filter| is `"cmigemo"`.
+
+					     *obsidian-kensaku-migemo_dict_path*
+migemo_dict_path ~
+	Type: `string`
+	Default: (auto-detected)
+
+	Path to the migemo dictionary file. Only used when
+	|obsidian-kensaku-query_filter| is `"cmigemo"`. If not
+	specified, the plugin will search for it automatically.
+
+						       *obsidian-kensaku-picker*
+picker ~
+	Type: `"default"` | `"egrepify"`
+	Default: `"default"`
+
+	The telescope picker to use. Set to `"egrepify"` to use
+	telescope-egrepify.nvim, which provides better regex
+	highlighting.
+
+==============================================================================
+LICENSE						      *obsidian-kensaku-license*
+
+MIT license.
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
