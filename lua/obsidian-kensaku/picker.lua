@@ -140,6 +140,7 @@ KensakuPicker.find_files = function(self, opts)
   telescope_builtin.find_files {
     prompt_title = prompt_title,
     cwd = opts.dir and tostring(opts.dir) or tostring(self.client.dir),
+    previewer = config.previewer and config.previewer() or nil,
     find_command = self:_build_find_cmd(),
     sorter = require "obsidian-kensaku.regex_sorter",
     on_input_filter_cb = function(prompt)
@@ -189,10 +190,13 @@ KensakuPicker.grep = function(self, opts)
     egrepify = ext.egrepify
   end
 
+  local previewer = config.previewer and config.previewer() or nil
+
   if opts.query and string.len(opts.query) > 0 then
     telescope_builtin.grep_string {
       prompt_title = prompt_title,
       cwd = tostring(cwd),
+      previewer = previewer,
       vimgrep_arguments = self:_build_grep_cmd(),
       search = config.query_filter(opts.query),
       attach_mappings = attach_mappings,
@@ -202,6 +206,7 @@ KensakuPicker.grep = function(self, opts)
     picker {
       prompt_title = prompt_title,
       cwd = tostring(cwd),
+      previewer = previewer,
       vimgrep_arguments = self:_build_grep_cmd(),
       attach_mappings = attach_mappings,
       ---@param prompt string
