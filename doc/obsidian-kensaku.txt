@@ -1,17 +1,17 @@
 *obsidian-kensaku.txt*	Search vault with Romaji
 
 ==============================================================================
-CONTENTS				     *obsidian-kensaku-contents*
+CONTENTS					     *obsidian-kensaku-contents*
 
     1. Introduction ............................ |obsidian-kensaku-introduction|
     2. Requirements ............................ |obsidian-kensaku-requirements|
-    3. Installation ................................ |obsidian-kensaku-install|
+    3. Installation ................................. |obsidian-kensaku-install|
     4. Commands .................................... |obsidian-kensaku-commands|
     5. Options ...................................... |obsidian-kensaku-options|
     6. License ...................................... |obsidian-kensaku-license|
 
 ==============================================================================
-INTRODUCTION				 *obsidian-kensaku-introduction*
+INTRODUCTION					 *obsidian-kensaku-introduction*
 
 obsidian-kensaku.nvim adds Romaji search capabilities to |obsidian.nvim|.
 It provides two commands:
@@ -24,7 +24,7 @@ Romaji input is converted to regex using kensaku.vim or cmigemo, enabling
 you to search Japanese text without switching input methods.
 
 ==============================================================================
-REQUIREMENTS				 *obsidian-kensaku-requirements*
+REQUIREMENTS					 *obsidian-kensaku-requirements*
 
 - Neovim >= 0.10.0
 - epwalsh/obsidian.nvim
@@ -40,7 +40,7 @@ REQUIREMENTS				 *obsidian-kensaku-requirements*
     https://github.com/fdschmidt93/telescope-egrepify.nvim
 
 ==============================================================================
-INSTALLATION				      *obsidian-kensaku-install*
+INSTALLATION					      *obsidian-kensaku-install*
 
 Example configuration with lazy.nvim using kensaku.vim (the default): >lua
     {
@@ -85,23 +85,23 @@ If you want to use cmigemo instead of kensaku.vim: >lua
 <
 
 ==============================================================================
-COMMANDS				     *obsidian-kensaku-commands*
+COMMANDS					     *obsidian-kensaku-commands*
 
-:ObsidianKensaku [query]			     *:ObsidianKensaku*
+:ObsidianKensaku [query]				      *:ObsidianKensaku*
 
 	Search vault note contents with Romaji. Works like
 	|:ObsidianSearch| but converts Romaji input to regex for
 	Japanese text matching. If [query] is given, it is used as the
 	initial search query.
 
-:ObsidianQuickKensaku				*:ObsidianQuickKensaku*
+:ObsidianQuickKensaku					 *:ObsidianQuickKensaku*
 
 	Search vault notes by file name with Romaji. Works like
 	|:ObsidianQuickSwitch| but converts Romaji input to regex for
 	Japanese text matching.
 
 ==============================================================================
-OPTIONS					      *obsidian-kensaku-options*
+OPTIONS						      *obsidian-kensaku-options*
 
 Options can be passed to the setup function or as `opts` in lazy.nvim: >lua
     require("obsidian-kensaku").setup {
@@ -109,7 +109,7 @@ Options can be passed to the setup function or as `opts` in lazy.nvim: >lua
       picker = "egrepify",
     }
 <
-					 *obsidian-kensaku-query_filter*
+						 *obsidian-kensaku-query_filter*
 query_filter ~
 	Type: `"kensaku"` | `"cmigemo"` | `fun(query: string): string`
 	Default: `"kensaku"`
@@ -128,7 +128,7 @@ query_filter ~
 	      end,
 	    }
 <
-				      *obsidian-kensaku-cmigemo_executable*
+					   *obsidian-kensaku-cmigemo_executable*
 cmigemo_executable ~
 	Type: `string`
 	Default: `"cmigemo"`
@@ -136,7 +136,7 @@ cmigemo_executable ~
 	Path to the cmigemo executable. Only used when
 	|obsidian-kensaku-query_filter| is `"cmigemo"`.
 
-					*obsidian-kensaku-migemo_dict_path*
+					     *obsidian-kensaku-migemo_dict_path*
 migemo_dict_path ~
 	Type: `string`
 	Default: (auto-detected)
@@ -145,7 +145,7 @@ migemo_dict_path ~
 	|obsidian-kensaku-query_filter| is `"cmigemo"`. If not
 	specified, the plugin will search for it automatically.
 
-					       *obsidian-kensaku-picker*
+						       *obsidian-kensaku-picker*
 picker ~
 	Type: `"default"` | `"egrepify"`
 	Default: `"default"`
@@ -155,7 +155,7 @@ picker ~
 	highlighting.
 
 ==============================================================================
-LICENSE					      *obsidian-kensaku-license*
+LICENSE						      *obsidian-kensaku-license*
 
 MIT license.
 

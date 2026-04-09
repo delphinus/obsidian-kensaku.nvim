@@ -1,17 +1,17 @@
 *obsidian-kensaku.txt*	ローマ字で vault を検索
 
 ==============================================================================
-目次					     *obsidian-kensaku-contents*
+目次						     *obsidian-kensaku-contents*
 
-    1. はじめに ............................ |obsidian-kensaku-introduction|
-    2. 必要なもの .......................... |obsidian-kensaku-requirements|
-    3. インストール ............................ |obsidian-kensaku-install|
-    4. コマンド ............................ |obsidian-kensaku-commands|
-    5. オプション .......................... |obsidian-kensaku-options|
-    6. ライセンス .......................... |obsidian-kensaku-license|
+    1. はじめに ................................ |obsidian-kensaku-introduction|
+    2. 必要なもの .............................. |obsidian-kensaku-requirements|
+    3. インストール ................................. |obsidian-kensaku-install|
+    4. コマンド .................................... |obsidian-kensaku-commands|
+    5. オプション ................................... |obsidian-kensaku-options|
+    6. ライセンス ................................... |obsidian-kensaku-license|
 
 ==============================================================================
-はじめに				 *obsidian-kensaku-introduction*
+はじめに					 *obsidian-kensaku-introduction*
 
 obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加する
 プラグインです。以下の二つのコマンドを提供します。
@@ -24,7 +24,7 @@ obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加�
 ドを切り替えずに日本語テキストを検索できます。
 
 ==============================================================================
-必要なもの				 *obsidian-kensaku-requirements*
+必要なもの					 *obsidian-kensaku-requirements*
 
 - Neovim >= 0.10.0
 - epwalsh/obsidian.nvim
@@ -40,7 +40,7 @@ obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加�
     https://github.com/fdschmidt93/telescope-egrepify.nvim
 
 ==============================================================================
-インストール				      *obsidian-kensaku-install*
+インストール					      *obsidian-kensaku-install*
 
 kensaku.vim を使う場合の lazy.nvim 設定例 (デフォルト): >lua
     {
@@ -85,23 +85,23 @@ cmigemo を使う場合: >lua
 <
 
 ==============================================================================
-コマンド				     *obsidian-kensaku-commands*
+コマンド					     *obsidian-kensaku-commands*
 
-:ObsidianKensaku [query]			     *:ObsidianKensaku*
+:ObsidianKensaku [query]				      *:ObsidianKensaku*
 
 	ローマ字で vault のノート内容を検索します。
 	|:ObsidianSearch| と同様に動作しますが、ローマ字入力を正規
 	表現に変換して日本語テキストをマッチングします。[query] を
 	指定すると初期検索クエリとして使用されます。
 
-:ObsidianQuickKensaku				*:ObsidianQuickKensaku*
+:ObsidianQuickKensaku					 *:ObsidianQuickKensaku*
 
 	ローマ字でファイル名からノートを検索します。
 	|:ObsidianQuickSwitch| と同様に動作しますが、ローマ字入力を
 	正規表現に変換して日本語テキストをマッチングします。
 
 ==============================================================================
-オプション				      *obsidian-kensaku-options*
+オプション					      *obsidian-kensaku-options*
 
 setup 関数または lazy.nvim の `opts` でオプションを設定できます: >lua
     require("obsidian-kensaku").setup {
@@ -109,7 +109,7 @@ setup 関数または lazy.nvim の `opts` でオプションを設定できま�
       picker = "egrepify",
     }
 <
-					 *obsidian-kensaku-query_filter*
+						 *obsidian-kensaku-query_filter*
 query_filter ~
 	型: `"kensaku"` | `"cmigemo"` | `fun(query: string): string`
 	デフォルト: `"kensaku"`
@@ -127,7 +127,7 @@ query_filter ~
 	      end,
 	    }
 <
-				      *obsidian-kensaku-cmigemo_executable*
+					   *obsidian-kensaku-cmigemo_executable*
 cmigemo_executable ~
 	型: `string`
 	デフォルト: `"cmigemo"`
@@ -136,7 +136,7 @@ cmigemo_executable ~
 	|obsidian-kensaku-query_filter| が `"cmigemo"` の場合のみ
 	使用されます。
 
-					*obsidian-kensaku-migemo_dict_path*
+					     *obsidian-kensaku-migemo_dict_path*
 migemo_dict_path ~
 	型: `string`
 	デフォルト: (自動検出)
@@ -146,7 +146,7 @@ migemo_dict_path ~
 	使用されます。指定しない場合、プラグインが自動的に検索しま
 	す。
 
-					       *obsidian-kensaku-picker*
+						       *obsidian-kensaku-picker*
 picker ~
 	型: `"default"` | `"egrepify"`
 	デフォルト: `"default"`
@@ -156,7 +156,7 @@ picker ~
 	善されます。
 
 ==============================================================================
-ライセンス				      *obsidian-kensaku-license*
+ライセンス					      *obsidian-kensaku-license*
 
 MIT ライセンス。
 
