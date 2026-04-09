@@ -3,12 +3,12 @@
 ==============================================================================
 CONTENTS					     *obsidian-kensaku-contents*
 
-|obsidian-kensaku-introduction|	Introduction
-|obsidian-kensaku-requirements|	Requirements
-|obsidian-kensaku-install|	Installation
-|obsidian-kensaku-commands|	Commands
-|obsidian-kensaku-options|	Options
-|obsidian-kensaku-license|	License
+Introduction					 |obsidian-kensaku-introduction|
+Requirements					 |obsidian-kensaku-requirements|
+Installation					      |obsidian-kensaku-install|
+Commands					     |obsidian-kensaku-commands|
+Options						      |obsidian-kensaku-options|
+License						      |obsidian-kensaku-license|
 
 ==============================================================================
 INTRODUCTION					 *obsidian-kensaku-introduction*
