@@ -160,9 +160,12 @@ previewer ~
 	Default: `nil`
 
 	A function that returns a custom telescope previewer. When
-	set, it is used for all picker commands.
+	set, it is used for all picker commands. For example,
+	md-render.nvim can render Markdown in the preview window.
 
-	Example with md-render.nvim: >lua
+	  https://github.com/delphinus/md-render.nvim
+
+	Example: >lua
 	    {
 	      previewer = function()
 	        return require("md-render.telescope").previewer()

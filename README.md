@@ -194,7 +194,8 @@ Use [fdschmidt93/telescope-egrepify.nvim][] instead of telescope's builtin.
 * type: `fun(): table`
 
 A function that returns a custom telescope previewer. When set, it is used
-for all picker commands.
+for all picker commands. For example, [delphinus/md-render.nvim][] can render
+Markdown in the preview window:
 
 ```lua
 {
@@ -203,6 +204,8 @@ for all picker commands.
   end,
 }
 ```
+
+[delphinus/md-render.nvim]: https://github.com/delphinus/md-render.nvim
 
 ## LICENSE
 

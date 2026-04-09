@@ -161,9 +161,12 @@ previewer ~
 	デフォルト: `nil`
 
 	カスタム telescope プレビューアを返す関数。設定すると、すべ
-	てのピッカーコマンドで使用されます。
+	てのピッカーコマンドで使用されます。例えば md-render.nvim
+	を使うとプレビューで Markdown を描画できます。
 
-	md-render.nvim との連携例: >lua
+	  https://github.com/delphinus/md-render.nvim
+
+	使用例: >lua
 	    {
 	      previewer = function()
 	        return require("md-render.telescope").previewer()
