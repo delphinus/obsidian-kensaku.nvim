@@ -13,15 +13,15 @@
 ==============================================================================
 はじめに					 *obsidian-kensaku-introduction*
 
-obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加する
-プラグインです。以下の二つのコマンドを提供します。
+obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加するプラグイン
+です。以下の二つのコマンドを提供します。
 
 - |:ObsidianKensaku| ノートの内容を検索 (|:ObsidianSearch| 相当)
 - |:ObsidianQuickKensaku| ファイル名でノートを検索
   (|:ObsidianQuickSwitch| 相当)
 
-ローマ字入力を kensaku.vim や cmigemo で正規表現に変換し、入力メソッ
-ドを切り替えずに日本語テキストを検索できます。
+ローマ字入力を kensaku.vim や cmigemo で正規表現に変換し、入力メソッドを切り替
+えずに日本語テキストを検索できます。
 
 ==============================================================================
 必要なもの					 *obsidian-kensaku-requirements*
@@ -89,16 +89,15 @@ cmigemo を使う場合: >lua
 
 :ObsidianKensaku [query]				      *:ObsidianKensaku*
 
-	ローマ字で vault のノート内容を検索します。
-	|:ObsidianSearch| と同様に動作しますが、ローマ字入力を正規
-	表現に変換して日本語テキストをマッチングします。[query] を
-	指定すると初期検索クエリとして使用されます。
+	ローマ字で vault のノート内容を検索します。 |:ObsidianSearch| と同様に動
+	作しますが、ローマ字入力を正規表現に変換して日本語テキストをマッチング
+	します。[query] を指定すると初期検索クエリとして使用されます。
 
 :ObsidianQuickKensaku					 *:ObsidianQuickKensaku*
 
-	ローマ字でファイル名からノートを検索します。
-	|:ObsidianQuickSwitch| と同様に動作しますが、ローマ字入力を
-	正規表現に変換して日本語テキストをマッチングします。
+	ローマ字でファイル名からノートを検索します。 |:ObsidianQuickSwitch| と同
+	様に動作しますが、ローマ字入力を正規表現に変換して日本語テキストをマッ
+	チングします。
 
 ==============================================================================
 オプション					      *obsidian-kensaku-options*
@@ -132,18 +131,16 @@ cmigemo_executable ~
 	型: `string`
 	デフォルト: `"cmigemo"`
 
-	cmigemo 実行ファイルのパス。
-	|obsidian-kensaku-query_filter| が `"cmigemo"` の場合のみ
-	使用されます。
+	cmigemo 実行ファイルのパス。 |obsidian-kensaku-query_filter| が
+	`"cmigemo"` の場合のみ使用されます。
 
 					     *obsidian-kensaku-migemo_dict_path*
 migemo_dict_path ~
 	型: `string`
 	デフォルト: (自動検出)
 
-	migemo 辞書ファイルのパス。
-	|obsidian-kensaku-query_filter| が `"cmigemo"` の場合のみ
-	使用されます。指定しない場合、プラグインが自動的に検索しま
+	migemo 辞書ファイルのパス。 |obsidian-kensaku-query_filter| が `"cmigemo"`
+	の場合のみ使用されます。指定しない場合、プラグインが自動的に検索しま
 	す。
 
 						       *obsidian-kensaku-picker*
@@ -152,17 +149,16 @@ picker ~
 	デフォルト: `"default"`
 
 	使用する telescope ピッカー。 `"egrepify"` に設定すると
-	telescope-egrepify.nvim を使用し、正規表現のハイライトが改
-	善されます。
+	telescope-egrepify.nvim を使用し、正規表現のハイライトが改善されます。
 
 						    *obsidian-kensaku-previewer*
 previewer ~
 	型: `fun(): table`
 	デフォルト: `nil`
 
-	カスタム telescope プレビューアを返す関数。設定すると、すべ
-	てのピッカーコマンドで使用されます。例えば md-render.nvim
-	を使うとプレビューで Markdown を描画できます。
+	カスタム telescope プレビューアを返す関数。設定すると、すべてのピッ
+	カーコマンドで使用されます。例えば md-render.nvim を使うとプレビューで
+	Markdown を描画できます。
 
 	  https://github.com/delphinus/md-render.nvim
 

@@ -13,15 +13,15 @@ License						      |obsidian-kensaku-license|
 ==============================================================================
 INTRODUCTION					 *obsidian-kensaku-introduction*
 
-obsidian-kensaku.nvim adds Romaji search capabilities to |obsidian.nvim|.
-It provides two commands:
+obsidian-kensaku.nvim adds Romaji search capabilities to |obsidian.nvim|. It
+provides two commands:
 
 - |:ObsidianKensaku| searches note contents (like |:ObsidianSearch|)
 - |:ObsidianQuickKensaku| searches notes by file name
   (like |:ObsidianQuickSwitch|)
 
-Romaji input is converted to regex using kensaku.vim or cmigemo, enabling
-you to search Japanese text without switching input methods.
+Romaji input is converted to regex using kensaku.vim or cmigemo, enabling you
+to search Japanese text without switching input methods.
 
 ==============================================================================
 REQUIREMENTS					 *obsidian-kensaku-requirements*
@@ -89,16 +89,15 @@ COMMANDS					     *obsidian-kensaku-commands*
 
 :ObsidianKensaku [query]				      *:ObsidianKensaku*
 
-	Search vault note contents with Romaji. Works like
-	|:ObsidianSearch| but converts Romaji input to regex for
-	Japanese text matching. If [query] is given, it is used as the
-	initial search query.
+	Search vault note contents with Romaji. Works like |:ObsidianSearch| but
+	converts Romaji input to regex for Japanese text matching. If [query]
+	is given, it is used as the initial search query.
 
 :ObsidianQuickKensaku					 *:ObsidianQuickKensaku*
 
 	Search vault notes by file name with Romaji. Works like
-	|:ObsidianQuickSwitch| but converts Romaji input to regex for
-	Japanese text matching.
+	|:ObsidianQuickSwitch| but converts Romaji input to regex for Japanese
+	text matching.
 
 ==============================================================================
 OPTIONS						      *obsidian-kensaku-options*
@@ -142,8 +141,8 @@ migemo_dict_path ~
 	Default: (auto-detected)
 
 	Path to the migemo dictionary file. Only used when
-	|obsidian-kensaku-query_filter| is `"cmigemo"`. If not
-	specified, the plugin will search for it automatically.
+	|obsidian-kensaku-query_filter| is `"cmigemo"`. If not specified, the
+	plugin will search for it automatically.
 
 						       *obsidian-kensaku-picker*
 picker ~
@@ -151,17 +150,16 @@ picker ~
 	Default: `"default"`
 
 	The telescope picker to use. Set to `"egrepify"` to use
-	telescope-egrepify.nvim, which provides better regex
-	highlighting.
+	telescope-egrepify.nvim, which provides better regex highlighting.
 
 						    *obsidian-kensaku-previewer*
 previewer ~
 	Type: `fun(): table`
 	Default: `nil`
 
-	A function that returns a custom telescope previewer. When
-	set, it is used for all picker commands. For example,
-	md-render.nvim can render Markdown in the preview window.
+	A function that returns a custom telescope previewer. When set, it is
+	used for all picker commands. For example, md-render.nvim can render
+	Markdown in the preview window.
 
 	  https://github.com/delphinus/md-render.nvim
 
