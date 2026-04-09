@@ -3,12 +3,12 @@
 ==============================================================================
 目次						     *obsidian-kensaku-contents*
 
-    1. はじめに ................................ |obsidian-kensaku-introduction|
-    2. 必要なもの .............................. |obsidian-kensaku-requirements|
-    3. インストール ................................. |obsidian-kensaku-install|
-    4. コマンド .................................... |obsidian-kensaku-commands|
-    5. オプション ................................... |obsidian-kensaku-options|
-    6. ライセンス ................................... |obsidian-kensaku-license|
+|obsidian-kensaku-introduction|	はじめに
+|obsidian-kensaku-requirements|	必要なもの
+|obsidian-kensaku-install|	インストール
+|obsidian-kensaku-commands|	コマンド
+|obsidian-kensaku-options|	オプション
+|obsidian-kensaku-license|	ライセンス
 
 ==============================================================================
 はじめに					 *obsidian-kensaku-introduction*
