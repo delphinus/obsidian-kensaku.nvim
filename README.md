@@ -13,15 +13,15 @@ Search the vault with Romaji powered by [epwalsh/obsidian.nvim][].
 This plugin adds a command `:ObsidianKensaku`. This command looks like
 `:ObsidianSearch` but you can use Romaji to search the vault.
 
-Romaji input is converted to regex using a built-in pure Lua migemo engine
-(ported from [oguna/jsmigemo][]). No external binaries or separate processes
-are required.
+Romaji input is converted to regex using [delphinus/luamigemo][] (a pure Lua
+migemo engine). No external binaries or separate processes are required.
 
-[oguna/jsmigemo]: https://github.com/oguna/jsmigemo
+[delphinus/luamigemo]: https://github.com/delphinus/luamigemo
 
 ## Requirements
 
 * [epwalsh/obsidian.nvim][]
+* [delphinus/luamigemo][]
 * [nvim-telescope/telescope.nvim][]
   - obsidian.nvim supports telescope, [ibhagwan/fzf-lua][] and
     [echasnovski/mini.pick][], but obsidian-kensaku.nvim supports telescope.nvim
@@ -71,7 +71,10 @@ You can also specify a custom path via `dict_path` in setup.
   "epwalsh/obsidian.nvim",
   dependencies = {
     "nvim-lua/plenary.nvim",
-    "delphinus/obsidian-kensaku.nvim",
+    {
+      "delphinus/obsidian-kensaku.nvim",
+      dependencies = { "delphinus/luamigemo" },
+    },
   },
   opts = {
     callbacks = {
@@ -97,6 +100,7 @@ write them in `opts` (for [lazy.nvim](https://github.com/folke/lazy.nvim)).
     "nvim-lua/plenary.nvim",
     {
       "delphinus/obsidian-kensaku.nvim",
+      dependencies = { "delphinus/luamigemo" },
       opts = {
         dict_path = "/path/to/migemo-compact-dict",
       },

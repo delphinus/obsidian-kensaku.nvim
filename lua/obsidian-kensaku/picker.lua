@@ -144,7 +144,7 @@ KensakuPicker.find_files = function(self, opts)
     find_command = self:_build_find_cmd(),
     sorter = require "obsidian-kensaku.regex_sorter",
     on_input_filter_cb = function(prompt)
-      local migemo = require "obsidian-kensaku.migemo"
+      local migemo = require "luamigemo"
       return { prompt = migemo.VIM_PREFIX .. migemo.query(config.dict_path, prompt, migemo.RXOP_VIM) }
     end,
     attach_mappings = function(_, map)

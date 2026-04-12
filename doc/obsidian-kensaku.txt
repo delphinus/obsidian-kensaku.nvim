@@ -21,10 +21,11 @@ provides two commands:
 - |:ObsidianQuickKensaku| searches notes by file name
   (like |:ObsidianQuickSwitch|)
 
-Romaji input is converted to regex using a built-in pure Lua migemo engine
-(ported from jsmigemo), enabling you to search Japanese text without
-switching input methods. No external binaries or separate processes are
-required.
+Romaji input is converted to regex using luamigemo (a pure Lua migemo
+engine), enabling you to search Japanese text without switching input
+methods. No external binaries or separate processes are required.
+
+  https://github.com/delphinus/luamigemo
 
 ==============================================================================
 REQUIREMENTS				         *obsidian-kensaku-requirements*
@@ -32,6 +33,8 @@ REQUIREMENTS				         *obsidian-kensaku-requirements*
 - Neovim >= 0.10.0
 - epwalsh/obsidian.nvim
     https://github.com/epwalsh/obsidian.nvim
+- delphinus/luamigemo
+    https://github.com/delphinus/luamigemo
 - nvim-telescope/telescope.nvim
     https://github.com/nvim-telescope/telescope.nvim
 - A migemo compact dictionary file (see |obsidian-kensaku-dictionary|)
@@ -66,7 +69,10 @@ Example configuration with lazy.nvim: >lua
       "epwalsh/obsidian.nvim",
       dependencies = {
         "nvim-lua/plenary.nvim",
-        "delphinus/obsidian-kensaku.nvim",
+        {
+          "delphinus/obsidian-kensaku.nvim",
+          dependencies = { "delphinus/luamigemo" },
+        },
       },
       opts = {
         callbacks = {
@@ -86,6 +92,7 @@ If you want to customize the dictionary path: >lua
         "nvim-lua/plenary.nvim",
         {
           "delphinus/obsidian-kensaku.nvim",
+          dependencies = { "delphinus/luamigemo" },
           opts = {
             dict_path = "/path/to/migemo-compact-dict",
           },
