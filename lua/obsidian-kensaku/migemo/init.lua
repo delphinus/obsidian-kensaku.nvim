@@ -35,7 +35,7 @@ function Migemo:query_a_word(word)
 
   local lower = word:lower()
   if self.dict then
-    for _, w in ipairs(self.dict:predictive_search(lower)) do
+    for w in self.dict:predictive_search(lower) do
       generator:add(w)
     end
   end
@@ -48,7 +48,7 @@ function Migemo:query_a_word(word)
     local hira = result.prefix .. suffix
     generator:add(hira)
     if self.dict then
-      for _, w in ipairs(self.dict:predictive_search(hira)) do
+      for w in self.dict:predictive_search(hira) do
         generator:add(w)
       end
     end

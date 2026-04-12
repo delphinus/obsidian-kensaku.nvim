@@ -66,18 +66,19 @@ function LOUDSTrie:reverse_lookup(index)
   return table.concat(result)
 end
 
+--- Predictive search: returns a coroutine iterator yielding all node indices under the given node.
 function LOUDSTrie:predictive_search(index)
-  local results = {}
-  local lower = index
-  local upper = index + 1
-  while upper - lower > 0 do
-    for i = lower, upper - 1 do
-      results[#results + 1] = i
+  return coroutine.wrap(function()
+    local lower = index
+    local upper = index + 1
+    while upper - lower > 0 do
+      for i = lower, upper - 1 do
+        coroutine.yield(i)
+      end
+      lower = self.bit_vector:rank(self.bit_vector:select(lower, false) + 1, true) + 1
+      upper = self.bit_vector:rank(self.bit_vector:select(upper, false) + 1, true) + 1
     end
-    lower = self.bit_vector:rank(self.bit_vector:select(lower, false) + 1, true) + 1
-    upper = self.bit_vector:rank(self.bit_vector:select(upper, false) + 1, true) + 1
-  end
-  return results
+  end)
 end
 
 return LOUDSTrie

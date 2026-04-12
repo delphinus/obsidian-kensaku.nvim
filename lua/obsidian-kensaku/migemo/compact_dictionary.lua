@@ -121,25 +121,25 @@ function CompactDictionary:search(key)
   return results
 end
 
---- Predictive search: returns all dictionary values for keys that start with the given prefix.
+--- Predictive search: returns a coroutine iterator yielding dictionary values
+--- for keys that start with the given prefix.
 function CompactDictionary:predictive_search(key)
-  local results = {}
-  local key_index = self.key_trie:lookup(key)
-  if key_index > 1 then
-    local nodes = self.key_trie:predictive_search(key_index)
-    for _, i in ipairs(nodes) do
-      if self.has_mapping:get(i) then
-        local vs = self.mapping_bv:select(i, false)
-        local ve = self.mapping_bv:next_clear_bit(vs + 1)
-        local size = ve - vs - 1
-        local off = self.mapping_bv:rank(vs, false)
-        for j = 0, size - 1 do
-          results[#results + 1] = self.value_trie:reverse_lookup(self.mapping[vs - off + j])
+  return coroutine.wrap(function()
+    local key_index = self.key_trie:lookup(key)
+    if key_index > 1 then
+      for i in self.key_trie:predictive_search(key_index) do
+        if self.has_mapping:get(i) then
+          local vs = self.mapping_bv:select(i, false)
+          local ve = self.mapping_bv:next_clear_bit(vs + 1)
+          local size = ve - vs - 1
+          local off = self.mapping_bv:rank(vs, false)
+          for j = 0, size - 1 do
+            coroutine.yield(self.value_trie:reverse_lookup(self.mapping[vs - off + j]))
+          end
         end
       end
     end
-  end
-  return results
+  end)
 end
 
 return CompactDictionary
