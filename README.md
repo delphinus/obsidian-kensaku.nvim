@@ -13,6 +13,12 @@ Search the vault with Romaji powered by [epwalsh/obsidian.nvim][].
 This plugin adds a command `:ObsidianKensaku`. This command looks like
 `:ObsidianSearch` but you can use Romaji to search the vault.
 
+Romaji input is converted to regex using a built-in pure Lua migemo engine
+(ported from [oguna/jsmigemo][]). No external binaries or separate processes
+are required.
+
+[oguna/jsmigemo]: https://github.com/oguna/jsmigemo
+
 ## Requirements
 
 * [epwalsh/obsidian.nvim][]
@@ -20,10 +26,8 @@ This plugin adds a command `:ObsidianKensaku`. This command looks like
   - obsidian.nvim supports telescope, [ibhagwan/fzf-lua][] and
     [echasnovski/mini.pick][], but obsidian-kensaku.nvim supports telescope.nvim
     only.
-* Converter for Romaji. You needs one of below.
-  - [lambdalisue/kensaku.vim][]
-  - `cmigemo` executable.
-  - or another one you prefer.
+* A migemo compact dictionary file (auto-detected or manually specified; see
+  [Dictionary](#dictionary) below)
 * [fdschmidt93/telescope-egrepify.nvim][] _(optional)_
   - telescope has a bug (https://github.com/nvim-telescope/telescope.nvim/issues/2272)
     that it cannot highlight properly with string matched by regex. I recommend
@@ -32,61 +36,34 @@ This plugin adds a command `:ObsidianKensaku`. This command looks like
 [nvim-telescope/telescope.nvim]: https://github.com/nvim-telescope/telescope.nvim
 [ibhagwan/fzf-lua]: https://github.com/ibhagwan/fzf-lua
 [echasnovski/mini.pick]: https://github.com/echasnovski/mini.pick
-[lambdalisue/kensaku.vim]: https://github.com/lambdalisue/kensaku.vim
 [fdschmidt93/telescope-egrepify.nvim]: https://github.com/fdschmidt93/telescope-egrepify.nvim
+
+## Dictionary
+
+This plugin uses a compact binary dictionary from
+[oguna/migemo-compact-dict-latest][]. The dictionary is auto-detected from the
+following locations:
+
+1. `~/.cache/kensaku.vim/migemo-compact-dict` (cached by kensaku.vim)
+2. `vim.fn.stdpath("data") .. "/migemo-compact-dict"`
+
+If you have previously used [lambdalisue/kensaku.vim][], its cached dictionary
+is reused automatically. Otherwise, download it manually:
+
+```bash
+# Download to Neovim's data directory
+curl -fLo "$(nvim --headless -c 'echo stdpath("data")' -c 'qa!' 2>&1)/migemo-compact-dict" \
+  https://github.com/oguna/migemo-compact-dict-latest/releases/download/v0.2/migemo-compact-dict
+```
+
+You can also specify a custom path via `dict_path` in setup.
+
+[oguna/migemo-compact-dict-latest]: https://github.com/oguna/migemo-compact-dict-latest
+[lambdalisue/kensaku.vim]: https://github.com/lambdalisue/kensaku.vim
 
 ## Install
 
-### Set up converter for Romaji
-
-You can choose one.
-
-#### kensaku.vim
-
-See [lambdalisue/kensaku.vim][] for the detail.
-
-```lua
--- example for lazy.nvim
-{
-  "lambdalisue/kensaku.vim",
-  dependencies = { "vim-denops/denops.vim" },
-}
-```
-
-#### `cmigemo` executable
-
-You can install by OS specific command.
-
-```bash
-# macOS
-brew install cmigemo
-
-# some Linux's
-apt-get install cmigemo
-```
-
-For Windows or other Linux's, see [C/Migemo — KaoriYa][].
-
-[C/Migemo — KaoriYa]: https://www.kaoriya.net/software/cmigemo/
-
-[vim-denops/denops.vim]: https://github.com/vim-denops/denops.vim
-
-### Pinning to a stable version
-
-This plugin uses [SemVer](https://semver.org/). If you want to avoid breaking
-changes, add `version = "*"` to your lazy.nvim spec. This tells lazy.nvim to
-use the latest tagged release instead of the `main` branch:
-
-```lua
-{
-  "delphinus/obsidian-kensaku.nvim",
-  version = "*",
-}
-```
-
 ### Add this plugin with your favorite plugin manager
-
-If you use kensaku.vim (the default way), you can set simply like this below.
 
 ```lua
 -- example for lazy.nvim
@@ -94,10 +71,7 @@ If you use kensaku.vim (the default way), you can set simply like this below.
   "epwalsh/obsidian.nvim",
   dependencies = {
     "nvim-lua/plenary.nvim",
-    {
-      "delphinus/obsidian-kensaku.nvim",
-      version = "*",
-    },
+    "delphinus/obsidian-kensaku.nvim",
   },
   opts = {
     callbacks = {
@@ -112,8 +86,8 @@ If you use kensaku.vim (the default way), you can set simply like this below.
 > [!IMPORTANT]
 > Remember to call this plugin in `opts.callbacks.post_setup`.
 
-If you want to customize the way, call `setup` or write them in `opts` (for
-[lazy.nvim](https://github.com/folke/lazy.nvim)).
+If you want to customize the dictionary path or other options, call `setup` or
+write them in `opts` (for [lazy.nvim](https://github.com/folke/lazy.nvim)).
 
 ```lua
 -- example for lazy.nvim
@@ -123,18 +97,13 @@ If you want to customize the way, call `setup` or write them in `opts` (for
     "nvim-lua/plenary.nvim",
     {
       "delphinus/obsidian-kensaku.nvim",
-      version = "*",
       opts = {
-        query_filter = "cmigemo",
-        cmigemo_executable = "/path/to/cmigemo",
-        migemo_dict_path = "/path/to/migemo-dict",
+        dict_path = "/path/to/migemo-compact-dict",
       },
       --- for other plugin managers
       -- config = function()
       --   require("obsidian-kensaku").setup {
-      --     query_filter = "cmigemo",
-      --     cmigemo_executable = "/path/to/cmigemo",
-      --     migemo_dict_path = "/path/to/migemo-dict",
+      --     dict_path = "/path/to/migemo-compact-dict",
       --   }
       -- end,
     },
@@ -164,14 +133,21 @@ name** with Romaji. This is the kensaku-powered equivalent of
 
 ## Options
 
+### `dict_path`
+
+* default: (auto-detected)
+* type: `string`
+
+Path to the migemo-compact-dict file. If not specified, the plugin searches
+common locations automatically (see [Dictionary](#dictionary) above).
+
 ### `query_filter`
 
-* default: `"kensaku"`
-* type: `"kensaku"|"cmigemo"|fun(query: string): string`
+* default: built-in Lua migemo
+* type: `fun(query: string): string`
 
-You can choose the way to convert Romaji into regex. It has pre-defined
-filters for [lambdalisue/kensaku.vim] and `cmigemo`, but you can define your
-own way to do this.
+A custom function to convert Romaji input into a PCRE regex string for
+grep-based search. Overrides the built-in migemo engine.
 
 ```lua
 {
@@ -180,23 +156,6 @@ own way to do this.
   end,
 }
 ```
-
-### `cmigemo_executable`
-
-* default: `"cmigemo"`
-* type: `string`
-
-Path for `cmigemo` executable. This will be used only if `query_filter` is
-`"cmigemo"`.
-
-### `migemo_dict_path`
-
-* default: Search automatically. See [lua/obsidian-kensaku/config.lua][].
-* type: `string`
-
-[lua/obsidian-kensaku/config.lua]: lua/obsidian-kensaku/config.lua
-
-Path for `migemo-dict`. This will be used only if `query_filter` is `"cmigemo"`.
 
 ### `picker`
 
