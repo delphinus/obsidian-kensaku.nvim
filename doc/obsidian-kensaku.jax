@@ -20,8 +20,11 @@ obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加�
 - |:ObsidianQuickKensaku| ファイル名でノートを検索
   (|:ObsidianQuickSwitch| 相当)
 
-ローマ字入力を kensaku.vim や cmigemo で正規表現に変換し、入力メソッドを切り替
-えずに日本語テキストを検索できます。
+ローマ字入力を luamigemo (純 Lua migemo エンジン) で正規表現に変換し、入力メ
+ソッドを切り替えずに日本語テキストを検索できます。外部バイナリや別プロセスは不
+要です。
+
+  https://github.com/delphinus/luamigemo
 
 ==============================================================================
 必要なもの					 *obsidian-kensaku-requirements*
@@ -29,13 +32,10 @@ obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加�
 - Neovim >= 0.10.0
 - epwalsh/obsidian.nvim
     https://github.com/epwalsh/obsidian.nvim
+- delphinus/luamigemo (辞書内蔵 — 追加ダウンロード不要)
+    https://github.com/delphinus/luamigemo
 - nvim-telescope/telescope.nvim
     https://github.com/nvim-telescope/telescope.nvim
-- 以下のローマ字変換器のいずれか:
-  - lambdalisue/kensaku.vim (vim-denops/denops.vim が必要)
-      https://github.com/lambdalisue/kensaku.vim
-  - `cmigemo` 実行ファイル
-  - 独自の変換関数
 - fdschmidt93/telescope-egrepify.nvim (任意、推奨)
     https://github.com/fdschmidt93/telescope-egrepify.nvim
 
@@ -44,16 +44,16 @@ obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加�
 
 安定版を使う ~
 
-このプラグインは SemVer に従います。破壊的な変更を避けたい場合は lazy.nvim の
-spec に `version = "*"` を追加してください。これにより `main` ブランチではなく、
-最新のタグ付きリリースが使用されます: >lua
+このプラグインは SemVer に従います。破壊的な変更を避けたい場合は、lazy.nvim の
+spec に `version = "*"` を追加してください。これにより `main` ブランチではなく、最
+新のタグ付きリリースが使用されます: >lua
     {
       "delphinus/obsidian-kensaku.nvim",
       version = "*",
     }
 <
 
-kensaku.vim を使う場合の lazy.nvim 設定例 (デフォルト): >lua
+lazy.nvim 設定例: >lua
     {
       "epwalsh/obsidian.nvim",
       dependencies = {
@@ -61,6 +61,7 @@ kensaku.vim を使う場合の lazy.nvim 設定例 (デフォルト): >lua
         {
           "delphinus/obsidian-kensaku.nvim",
           version = "*",
+          dependencies = { { "delphinus/luamigemo", version = "*" } },
         },
       },
       opts = {
@@ -74,7 +75,7 @@ kensaku.vim を使う場合の lazy.nvim 設定例 (デフォルト): >lua
 <
 重要: `opts.callbacks.post_setup` 内で呼び出す必要があります。
 
-cmigemo を使う場合: >lua
+オプションをカスタマイズする場合: >lua
     {
       "epwalsh/obsidian.nvim",
       dependencies = {
@@ -82,10 +83,9 @@ cmigemo を使う場合: >lua
         {
           "delphinus/obsidian-kensaku.nvim",
           version = "*",
+          dependencies = { { "delphinus/luamigemo", version = "*" } },
           opts = {
-            query_filter = "cmigemo",
-            cmigemo_executable = "/path/to/cmigemo",
-            migemo_dict_path = "/path/to/migemo-dict",
+            picker = "egrepify",
           },
         },
       },
@@ -119,45 +119,35 @@ cmigemo を使う場合: >lua
 
 setup 関数または lazy.nvim の `opts` でオプションを設定できます: >lua
     require("obsidian-kensaku").setup {
-      query_filter = "kensaku",
       picker = "egrepify",
     }
 <
+						    *obsidian-kensaku-dict_path*
+dict_path ~
+	型: `string`
+	デフォルト: `nil` (luamigemo の内蔵辞書を使用)
+
+	カスタム migemo-compact-dict ファイルのパス。指定しない場合、luamigemo
+	に内蔵された辞書が使用されます。GPL ライセンスのより大きな辞書
+	(oguna/migemo-compact-dict-latest) を使用する場合などに指定します。
+
+	  https://github.com/oguna/migemo-compact-dict-latest
+
 						 *obsidian-kensaku-query_filter*
 query_filter ~
-	型: `"kensaku"` | `"cmigemo"` | `fun(query: string): string`
-	デフォルト: `"kensaku"`
+	型: `fun(query: string): string`
+	デフォルト: 内蔵 Lua migemo
 
-	ローマ字を正規表現に変換する方法を指定します。
+	ローマ字のクエリ文字列を受け取り、grep 検索用の PCRE 正規表現文字列を
+	返すカスタム関数。内蔵の migemo エンジンを上書きします。
 
-	`"kensaku"`    lambdalisue/kensaku.vim を使用。
-	`"cmigemo"`    cmigemo 実行ファイルを使用。
-	関数         クエリ文字列を受け取り正規表現を返す独自関数。
-
-	独自関数の使用例: >lua
+	使用例: >lua
 	    {
 	      query_filter = function(query)
 	        return some_way_to_create_regex(query)
 	      end,
 	    }
 <
-					   *obsidian-kensaku-cmigemo_executable*
-cmigemo_executable ~
-	型: `string`
-	デフォルト: `"cmigemo"`
-
-	cmigemo 実行ファイルのパス。 |obsidian-kensaku-query_filter| が
-	`"cmigemo"` の場合のみ使用されます。
-
-					     *obsidian-kensaku-migemo_dict_path*
-migemo_dict_path ~
-	型: `string`
-	デフォルト: (自動検出)
-
-	migemo 辞書ファイルのパス。 |obsidian-kensaku-query_filter| が `"cmigemo"`
-	の場合のみ使用されます。指定しない場合、プラグインが自動的に検索しま
-	す。
-
 						       *obsidian-kensaku-picker*
 picker ~
 	型: `"default"` | `"egrepify"`

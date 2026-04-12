@@ -21,13 +21,11 @@ migemo engine). No external binaries or separate processes are required.
 ## Requirements
 
 * [epwalsh/obsidian.nvim][]
-* [delphinus/luamigemo][]
+* [delphinus/luamigemo][] (dictionary bundled — no extra download needed)
 * [nvim-telescope/telescope.nvim][]
   - obsidian.nvim supports telescope, [ibhagwan/fzf-lua][] and
     [echasnovski/mini.pick][], but obsidian-kensaku.nvim supports telescope.nvim
     only.
-* A migemo compact dictionary file (auto-detected or manually specified; see
-  [Dictionary](#dictionary) below)
 * [fdschmidt93/telescope-egrepify.nvim][] _(optional)_
   - telescope has a bug (https://github.com/nvim-telescope/telescope.nvim/issues/2272)
     that it cannot highlight properly with string matched by regex. I recommend
@@ -37,29 +35,6 @@ migemo engine). No external binaries or separate processes are required.
 [ibhagwan/fzf-lua]: https://github.com/ibhagwan/fzf-lua
 [echasnovski/mini.pick]: https://github.com/echasnovski/mini.pick
 [fdschmidt93/telescope-egrepify.nvim]: https://github.com/fdschmidt93/telescope-egrepify.nvim
-
-## Dictionary
-
-This plugin uses a compact binary dictionary from
-[oguna/migemo-compact-dict-latest][]. The dictionary is auto-detected from the
-following locations:
-
-1. `~/.cache/kensaku.vim/migemo-compact-dict` (cached by kensaku.vim)
-2. `vim.fn.stdpath("data") .. "/migemo-compact-dict"`
-
-If you have previously used [lambdalisue/kensaku.vim][], its cached dictionary
-is reused automatically. Otherwise, download it manually:
-
-```bash
-# Download to Neovim's data directory
-curl -fLo "$(nvim --headless -c 'echo stdpath("data")' -c 'qa!' 2>&1)/migemo-compact-dict" \
-  https://github.com/oguna/migemo-compact-dict-latest/releases/download/v0.2/migemo-compact-dict
-```
-
-You can also specify a custom path via `dict_path` in setup.
-
-[oguna/migemo-compact-dict-latest]: https://github.com/oguna/migemo-compact-dict-latest
-[lambdalisue/kensaku.vim]: https://github.com/lambdalisue/kensaku.vim
 
 ## Install
 
@@ -87,7 +62,7 @@ use the latest tagged release instead of the `main` branch:
     {
       "delphinus/obsidian-kensaku.nvim",
       version = "*",
-      dependencies = { "delphinus/luamigemo" },
+      dependencies = { { "delphinus/luamigemo", version = "*" } },
     },
   },
   opts = {
@@ -103,8 +78,8 @@ use the latest tagged release instead of the `main` branch:
 > [!IMPORTANT]
 > Remember to call this plugin in `opts.callbacks.post_setup`.
 
-If you want to customize the dictionary path or other options, call `setup` or
-write them in `opts` (for [lazy.nvim](https://github.com/folke/lazy.nvim)).
+If you want to customize options, call `setup` or write them in `opts` (for
+[lazy.nvim](https://github.com/folke/lazy.nvim)).
 
 ```lua
 -- example for lazy.nvim
@@ -115,14 +90,14 @@ write them in `opts` (for [lazy.nvim](https://github.com/folke/lazy.nvim)).
     {
       "delphinus/obsidian-kensaku.nvim",
       version = "*",
-      dependencies = { "delphinus/luamigemo" },
+      dependencies = { { "delphinus/luamigemo", version = "*" } },
       opts = {
-        dict_path = "/path/to/migemo-compact-dict",
+        picker = "egrepify",
       },
       --- for other plugin managers
       -- config = function()
       --   require("obsidian-kensaku").setup {
-      --     dict_path = "/path/to/migemo-compact-dict",
+      --     picker = "egrepify",
       --   }
       -- end,
     },
@@ -154,11 +129,15 @@ name** with Romaji. This is the kensaku-powered equivalent of
 
 ### `dict_path`
 
-* default: (auto-detected)
+* default: `nil` (uses luamigemo's bundled dictionary)
 * type: `string`
 
-Path to the migemo-compact-dict file. If not specified, the plugin searches
-common locations automatically (see [Dictionary](#dictionary) above).
+Path to a custom migemo-compact-dict file. If not specified, the bundled
+dictionary included with [delphinus/luamigemo][] is used. You can use this
+option to specify a larger dictionary such as the GPL-licensed one from
+[oguna/migemo-compact-dict-latest][].
+
+[oguna/migemo-compact-dict-latest]: https://github.com/oguna/migemo-compact-dict-latest
 
 ### `query_filter`
 
