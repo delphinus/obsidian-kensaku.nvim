@@ -5,7 +5,7 @@ local filters = {}
 filters.default = function(query)
   local config = require "obsidian-kensaku.config"
   local migemo = require "luamigemo"
-  return migemo.query(config.dict_path, query, migemo.RXOP_PCRE)
+  return migemo.get(config.dict_path):query(query)
 end
 
 return filters
