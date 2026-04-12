@@ -71,6 +71,19 @@ For Windows or other Linux's, see [C/Migemo — KaoriYa][].
 
 [vim-denops/denops.vim]: https://github.com/vim-denops/denops.vim
 
+### Pinning to a stable version
+
+This plugin uses [SemVer](https://semver.org/). If you want to avoid breaking
+changes, add `version = "*"` to your lazy.nvim spec. This tells lazy.nvim to
+use the latest tagged release instead of the `main` branch:
+
+```lua
+{
+  "delphinus/obsidian-kensaku.nvim",
+  version = "*",
+}
+```
+
 ### Add this plugin with your favorite plugin manager
 
 If you use kensaku.vim (the default way), you can set simply like this below.
@@ -81,7 +94,10 @@ If you use kensaku.vim (the default way), you can set simply like this below.
   "epwalsh/obsidian.nvim",
   dependencies = {
     "nvim-lua/plenary.nvim",
-    "delphinus/obsidian-kensaku.nvim",
+    {
+      "delphinus/obsidian-kensaku.nvim",
+      version = "*",
+    },
   },
   opts = {
     callbacks = {
@@ -107,6 +123,7 @@ If you want to customize the way, call `setup` or write them in `opts` (for
     "nvim-lua/plenary.nvim",
     {
       "delphinus/obsidian-kensaku.nvim",
+      version = "*",
       opts = {
         query_filter = "cmigemo",
         cmigemo_executable = "/path/to/cmigemo",

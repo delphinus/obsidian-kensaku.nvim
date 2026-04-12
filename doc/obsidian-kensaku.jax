@@ -42,12 +42,26 @@ obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加�
 ==============================================================================
 インストール					      *obsidian-kensaku-install*
 
+安定版を使う ~
+
+このプラグインは SemVer に従います。破壊的な変更を避けたい場合は lazy.nvim の
+spec に `version = "*"` を追加してください。これにより `main` ブランチではなく、
+最新のタグ付きリリースが使用されます: >lua
+    {
+      "delphinus/obsidian-kensaku.nvim",
+      version = "*",
+    }
+<
+
 kensaku.vim を使う場合の lazy.nvim 設定例 (デフォルト): >lua
     {
       "epwalsh/obsidian.nvim",
       dependencies = {
         "nvim-lua/plenary.nvim",
-        "delphinus/obsidian-kensaku.nvim",
+        {
+          "delphinus/obsidian-kensaku.nvim",
+          version = "*",
+        },
       },
       opts = {
         callbacks = {
@@ -67,6 +81,7 @@ cmigemo を使う場合: >lua
         "nvim-lua/plenary.nvim",
         {
           "delphinus/obsidian-kensaku.nvim",
+          version = "*",
           opts = {
             query_filter = "cmigemo",
             cmigemo_executable = "/path/to/cmigemo",

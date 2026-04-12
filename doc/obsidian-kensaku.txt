@@ -42,12 +42,26 @@ REQUIREMENTS					 *obsidian-kensaku-requirements*
 ==============================================================================
 INSTALLATION					      *obsidian-kensaku-install*
 
+PINNING TO A STABLE VERSION ~
+
+This plugin uses SemVer. If you want to avoid breaking changes, add
+`version = "*"` to your lazy.nvim spec. This tells lazy.nvim to use the
+latest tagged release instead of the `main` branch: >lua
+    {
+      "delphinus/obsidian-kensaku.nvim",
+      version = "*",
+    }
+<
+
 Example configuration with lazy.nvim using kensaku.vim (the default): >lua
     {
       "epwalsh/obsidian.nvim",
       dependencies = {
         "nvim-lua/plenary.nvim",
-        "delphinus/obsidian-kensaku.nvim",
+        {
+          "delphinus/obsidian-kensaku.nvim",
+          version = "*",
+        },
       },
       opts = {
         callbacks = {
@@ -67,6 +81,7 @@ If you want to use cmigemo instead of kensaku.vim: >lua
         "nvim-lua/plenary.nvim",
         {
           "delphinus/obsidian-kensaku.nvim",
+          version = "*",
           opts = {
             query_filter = "cmigemo",
             cmigemo_executable = "/path/to/cmigemo",
