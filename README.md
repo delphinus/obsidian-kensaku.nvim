@@ -63,6 +63,19 @@ You can also specify a custom path via `dict_path` in setup.
 
 ## Install
 
+### Pinning to a stable version
+
+This plugin uses [SemVer](https://semver.org/). If you want to avoid breaking
+changes, add `version = "*"` to your lazy.nvim spec. This tells lazy.nvim to
+use the latest tagged release instead of the `main` branch:
+
+```lua
+{
+  "delphinus/obsidian-kensaku.nvim",
+  version = "*",
+}
+```
+
 ### Add this plugin with your favorite plugin manager
 
 ```lua
@@ -73,6 +86,7 @@ You can also specify a custom path via `dict_path` in setup.
     "nvim-lua/plenary.nvim",
     {
       "delphinus/obsidian-kensaku.nvim",
+      version = "*",
       dependencies = { "delphinus/luamigemo" },
     },
   },
@@ -100,6 +114,7 @@ write them in `opts` (for [lazy.nvim](https://github.com/folke/lazy.nvim)).
     "nvim-lua/plenary.nvim",
     {
       "delphinus/obsidian-kensaku.nvim",
+      version = "*",
       dependencies = { "delphinus/luamigemo" },
       opts = {
         dict_path = "/path/to/migemo-compact-dict",

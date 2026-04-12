@@ -64,6 +64,17 @@ You can also specify a custom path via |obsidian-kensaku-dict_path|.
 ==============================================================================
 INSTALLATION				              *obsidian-kensaku-install*
 
+PINNING TO A STABLE VERSION ~
+
+This plugin uses SemVer. If you want to avoid breaking changes, add
+`version = "*"` to your lazy.nvim spec. This tells lazy.nvim to use the
+latest tagged release instead of the `main` branch: >lua
+    {
+      "delphinus/obsidian-kensaku.nvim",
+      version = "*",
+    }
+<
+
 Example configuration with lazy.nvim: >lua
     {
       "epwalsh/obsidian.nvim",
@@ -71,6 +82,7 @@ Example configuration with lazy.nvim: >lua
         "nvim-lua/plenary.nvim",
         {
           "delphinus/obsidian-kensaku.nvim",
+          version = "*",
           dependencies = { "delphinus/luamigemo" },
         },
       },
@@ -92,6 +104,7 @@ If you want to customize the dictionary path: >lua
         "nvim-lua/plenary.nvim",
         {
           "delphinus/obsidian-kensaku.nvim",
+          version = "*",
           dependencies = { "delphinus/luamigemo" },
           opts = {
             dict_path = "/path/to/migemo-compact-dict",
