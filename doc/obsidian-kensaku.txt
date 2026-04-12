@@ -3,15 +3,15 @@
 ==============================================================================
 CONTENTS					     *obsidian-kensaku-contents*
 
-Introduction					 |obsidian-kensaku-introduction|
-Requirements					 |obsidian-kensaku-requirements|
-Installation					      |obsidian-kensaku-install|
-Commands					     |obsidian-kensaku-commands|
-Options						      |obsidian-kensaku-options|
-License						      |obsidian-kensaku-license|
+Introduction				         |obsidian-kensaku-introduction|
+Requirements				         |obsidian-kensaku-requirements|
+Installation				              |obsidian-kensaku-install|
+Commands				             |obsidian-kensaku-commands|
+Options					              |obsidian-kensaku-options|
+License					              |obsidian-kensaku-license|
 
 ==============================================================================
-INTRODUCTION					 *obsidian-kensaku-introduction*
+INTRODUCTION				         *obsidian-kensaku-introduction*
 
 obsidian-kensaku.nvim adds Romaji search capabilities to |obsidian.nvim|. It
 provides two commands:
@@ -20,40 +20,40 @@ provides two commands:
 - |:ObsidianQuickKensaku| searches notes by file name
   (like |:ObsidianQuickSwitch|)
 
-Romaji input is converted to regex using kensaku.vim or cmigemo, enabling you
-to search Japanese text without switching input methods.
+Romaji input is converted to regex using luamigemo (a pure Lua migemo engine),
+enabling you to search Japanese text without switching input methods. No
+external binaries or separate processes are required.
+
+  https://github.com/delphinus/luamigemo
 
 ==============================================================================
-REQUIREMENTS					 *obsidian-kensaku-requirements*
+REQUIREMENTS				         *obsidian-kensaku-requirements*
 
 - Neovim >= 0.10.0
 - epwalsh/obsidian.nvim
     https://github.com/epwalsh/obsidian.nvim
+- delphinus/luamigemo (dictionary bundled — no extra download needed)
+    https://github.com/delphinus/luamigemo
 - nvim-telescope/telescope.nvim
     https://github.com/nvim-telescope/telescope.nvim
-- One of the following Romaji converters:
-  - lambdalisue/kensaku.vim (requires vim-denops/denops.vim)
-      https://github.com/lambdalisue/kensaku.vim
-  - `cmigemo` executable
-  - A custom converter function
 - fdschmidt93/telescope-egrepify.nvim (optional, recommended)
     https://github.com/fdschmidt93/telescope-egrepify.nvim
 
 ==============================================================================
-INSTALLATION					      *obsidian-kensaku-install*
+INSTALLATION				              *obsidian-kensaku-install*
 
 PINNING TO A STABLE VERSION ~
 
-This plugin uses SemVer. If you want to avoid breaking changes, add
-`version = "*"` to your lazy.nvim spec. This tells lazy.nvim to use the
-latest tagged release instead of the `main` branch: >lua
+This plugin uses SemVer. If you want to avoid breaking changes, you can pin to
+a stable release by adding `version = "*"` to your lazy.nvim spec; lazy.nvim will
+then use the latest tagged release instead of the `main` branch: >lua
     {
       "delphinus/obsidian-kensaku.nvim",
       version = "*",
     }
 <
 
-Example configuration with lazy.nvim using kensaku.vim (the default): >lua
+Example configuration with lazy.nvim: >lua
     {
       "epwalsh/obsidian.nvim",
       dependencies = {
@@ -61,6 +61,7 @@ Example configuration with lazy.nvim using kensaku.vim (the default): >lua
         {
           "delphinus/obsidian-kensaku.nvim",
           version = "*",
+          dependencies = { { "delphinus/luamigemo", version = "*" } },
         },
       },
       opts = {
@@ -74,7 +75,7 @@ Example configuration with lazy.nvim using kensaku.vim (the default): >lua
 <
 IMPORTANT: You must call this plugin in `opts.callbacks.post_setup`.
 
-If you want to use cmigemo instead of kensaku.vim: >lua
+If you want to customize options: >lua
     {
       "epwalsh/obsidian.nvim",
       dependencies = {
@@ -82,10 +83,9 @@ If you want to use cmigemo instead of kensaku.vim: >lua
         {
           "delphinus/obsidian-kensaku.nvim",
           version = "*",
+          dependencies = { { "delphinus/luamigemo", version = "*" } },
           opts = {
-            query_filter = "cmigemo",
-            cmigemo_executable = "/path/to/cmigemo",
-            migemo_dict_path = "/path/to/migemo-dict",
+            picker = "egrepify",
           },
         },
       },
@@ -100,7 +100,7 @@ If you want to use cmigemo instead of kensaku.vim: >lua
 <
 
 ==============================================================================
-COMMANDS					     *obsidian-kensaku-commands*
+COMMANDS				             *obsidian-kensaku-commands*
 
 :ObsidianKensaku [query]				      *:ObsidianKensaku*
 
@@ -108,57 +108,48 @@ COMMANDS					     *obsidian-kensaku-commands*
 	converts Romaji input to regex for Japanese text matching. If [query]
 	is given, it is used as the initial search query.
 
-:ObsidianQuickKensaku					 *:ObsidianQuickKensaku*
+:ObsidianQuickKensaku				         *:ObsidianQuickKensaku*
 
 	Search vault notes by file name with Romaji. Works like
 	|:ObsidianQuickSwitch| but converts Romaji input to regex for Japanese
 	text matching.
 
 ==============================================================================
-OPTIONS						      *obsidian-kensaku-options*
+OPTIONS					              *obsidian-kensaku-options*
 
 Options can be passed to the setup function or as `opts` in lazy.nvim: >lua
     require("obsidian-kensaku").setup {
-      query_filter = "kensaku",
       picker = "egrepify",
     }
 <
+						    *obsidian-kensaku-dict_path*
+dict_path ~
+	Type: `string`
+	Default: `nil` (uses luamigemo's bundled dictionary)
+
+	Path to a custom migemo-compact-dict file. If not specified, the
+	bundled dictionary included with luamigemo is used. You can use this
+	option to specify a larger dictionary such as the GPL-licensed one
+	from oguna/migemo-compact-dict-latest.
+
+	  https://github.com/oguna/migemo-compact-dict-latest
+
 						 *obsidian-kensaku-query_filter*
 query_filter ~
-	Type: `"kensaku"` | `"cmigemo"` | `fun(query: string): string`
-	Default: `"kensaku"`
+	Type: `fun(query: string): string`
+	Default: built-in Lua migemo
 
-	The method to convert Romaji into regex.
+	A custom function that takes a Romaji query string and returns a PCRE
+	regex string for grep-based search. Overrides the built-in migemo
+	engine.
 
-	`"kensaku"`    Use lambdalisue/kensaku.vim.
-	`"cmigemo"`    Use the cmigemo executable.
-	function     A custom function that takes a query string and
-	             returns a regex string.
-
-	Example with a custom function: >lua
+	Example: >lua
 	    {
 	      query_filter = function(query)
 	        return some_way_to_create_regex(query)
 	      end,
 	    }
 <
-					   *obsidian-kensaku-cmigemo_executable*
-cmigemo_executable ~
-	Type: `string`
-	Default: `"cmigemo"`
-
-	Path to the cmigemo executable. Only used when
-	|obsidian-kensaku-query_filter| is `"cmigemo"`.
-
-					     *obsidian-kensaku-migemo_dict_path*
-migemo_dict_path ~
-	Type: `string`
-	Default: (auto-detected)
-
-	Path to the migemo dictionary file. Only used when
-	|obsidian-kensaku-query_filter| is `"cmigemo"`. If not specified, the
-	plugin will search for it automatically.
-
 						       *obsidian-kensaku-picker*
 picker ~
 	Type: `"default"` | `"egrepify"`
@@ -187,7 +178,7 @@ previewer ~
 <
 
 ==============================================================================
-LICENSE						      *obsidian-kensaku-license*
+LICENSE					              *obsidian-kensaku-license*
 
 MIT license.
 
