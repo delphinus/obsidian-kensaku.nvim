@@ -12,11 +12,11 @@ return setmetatable({ setup_called = false }, {
     vim.api.nvim_create_user_command("ObsidianKensaku", function(data)
       local picker = require("obsidian-kensaku.picker").new(client)
       picker:grep_notes { query = data.args }
-    end, { nargs = "?", desc = "Search vault with kensaku.vim" })
+    end, { nargs = "?", desc = "Search vault with migemo" })
     vim.api.nvim_create_user_command("ObsidianQuickKensaku", function(data)
       local picker = require("obsidian-kensaku.picker").new(client)
       picker:find_notes()
-    end, { nargs = "?", desc = "Search vault with kensaku.vim" })
+    end, { nargs = "?", desc = "Search vault with migemo" })
   end,
   ---@param key string
   __index = function(self, key)
