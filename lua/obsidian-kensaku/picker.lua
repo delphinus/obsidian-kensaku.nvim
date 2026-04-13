@@ -146,9 +146,7 @@ KensakuPicker.find_files = function(self, opts)
     on_input_filter_cb = function(prompt)
       local migemo = require "luamigemo"
       local m = migemo.get(config.dict_path)
-      m:set_rxop(migemo.RXOP_VIM)
-      local result = m:query(prompt)
-      m:set_rxop(migemo.RXOP_PCRE)
+      local result = m:query(prompt, migemo.RXOP_VIM)
       return { prompt = migemo.VIM_PREFIX .. result }
     end,
     attach_mappings = function(_, map)
