@@ -14,11 +14,14 @@
 はじめに					 *obsidian-kensaku-introduction*
 
 obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加するプラグイン
-です。以下の二つのコマンドを提供します。
+です。 `:Obsidian` の以下二つのサブコマンドを提供します。
 
-- |:ObsidianKensaku| ノートの内容を検索 (`:Obsidian search` 相当)
-- |:ObsidianQuickKensaku| ファイル名でノートを検索
+- `:Obsidian kensaku` ノートの内容を検索 (`:Obsidian search` 相当)
+- `:Obsidian quick_kensaku` ファイル名でノートを検索
   (`:Obsidian quick_switch` 相当)
+
+トップレベルのユーザコマンド |:ObsidianKensaku| / |:ObsidianQuickKensaku| も
+エイリアスとして残してありますが v4.0.0 で削除予定です。
 
 ローマ字入力を luamigemo (純 Lua migemo エンジン) で正規表現に変換し、入力メ
 ソッドを切り替えずに日本語テキストを検索できます。外部バイナリや別プロセスは不
@@ -64,8 +67,8 @@ v2 系はアーカイブされた epwalsh/obsidian.nvim を対象とします。
 lazy.nvim 設定例: >lua
     {
       "delphinus/obsidian-kensaku.nvim",
-      version = "^3.0",
-      cmd = { "ObsidianKensaku", "ObsidianQuickKensaku" },
+      version = "^3.1",
+      cmd = "Obsidian",
       dependencies = {
         "obsidian-nvim/obsidian.nvim",
         { "delphinus/luamigemo", version = "*" },
@@ -73,6 +76,10 @@ lazy.nvim 設定例: >lua
       opts = {},
     }
 <
+`cmd = "Obsidian"` を指定することで、 lazy.nvim は `:Obsidian ...` を
+初めて呼んだときに本プラグインと obsidian.nvim を両方ロードします。これに
+より `:Obsidian kensaku` / `:Obsidian quick_kensaku` サブコマンドが
+ディスパッチ前に登録された状態になります。
 `opts = {}` を指定すると lazy.nvim が自動で
 `require("obsidian-kensaku").setup()` を呼び出します。他のプラグインマネージャ
 を使う場合は手動で `setup` を呼んでください: >lua
@@ -89,17 +96,21 @@ obsidian.nvim が初期化されていれば動作するため、上記例のよ
 ==============================================================================
 コマンド					     *obsidian-kensaku-commands*
 
-:ObsidianKensaku [query]				      *:ObsidianKensaku*
+:Obsidian kensaku [query]				      *:ObsidianKensaku*
 
 	ローマ字で vault のノート内容を検索します。 `:Obsidian search` と同様
 	に動作しますが、ローマ字入力を正規表現に変換して日本語テキストをマッ
 	チングします。[query] を指定すると初期検索クエリとして使用されます。
 
-:ObsidianQuickKensaku					 *:ObsidianQuickKensaku*
+	`:ObsidianKensaku` でも呼び出せます (legacy 、 v4.0.0 で削除予定)。
+
+:Obsidian quick_kensaku					 *:ObsidianQuickKensaku*
 
 	ローマ字でファイル名からノートを検索します。 `:Obsidian quick_switch`
 	と同様に動作しますが、ローマ字入力を正規表現に変換して日本語テキスト
 	をマッチングします。
+
+	`:ObsidianQuickKensaku` でも呼び出せます (legacy 、 v4.0.0 で削除予定)。
 
 ==============================================================================
 オプション					      *obsidian-kensaku-options*

@@ -17,11 +17,15 @@ Search the vault with Romaji powered by [obsidian-nvim/obsidian.nvim][].
 
 ## What's this?
 
-This plugin adds a command `:ObsidianKensaku`. This command looks like
+This plugin adds a command `:Obsidian kensaku`. This command looks like
 `:Obsidian search` but you can use Romaji to search the vault.
 
 Romaji input is converted to regex using [delphinus/luamigemo][] (a pure Lua
 migemo engine). No external binaries or separate processes are required.
+
+> [!NOTE]
+> The top-level `:ObsidianKensaku` / `:ObsidianQuickKensaku` user commands
+> remain as aliases for compatibility, and will be removed in v4.0.0.
 
 [delphinus/luamigemo]: https://github.com/delphinus/luamigemo
 
@@ -66,8 +70,8 @@ This plugin uses [SemVer](https://semver.org/). The v3 line targets
 -- example for lazy.nvim
 {
   "delphinus/obsidian-kensaku.nvim",
-  version = "^3.0",
-  cmd = { "ObsidianKensaku", "ObsidianQuickKensaku" },
+  version = "^3.1",
+  cmd = "Obsidian",
   dependencies = {
     "obsidian-nvim/obsidian.nvim",
     { "delphinus/luamigemo", version = "*" },
@@ -75,6 +79,10 @@ This plugin uses [SemVer](https://semver.org/). The v3 line targets
   opts = {},
 }
 ```
+
+`cmd = "Obsidian"` makes lazy.nvim load both this plugin and obsidian.nvim on
+the first `:Obsidian ...` invocation, so the `:Obsidian kensaku` /
+`:Obsidian quick_kensaku` subcommands are registered before they are dispatched.
 
 `opts = {}` makes lazy.nvim call `require("obsidian-kensaku").setup()` for you.
 For other plugin managers, call `setup` manually:
@@ -93,16 +101,20 @@ require("obsidian-kensaku").setup {
 
 ## Commands
 
-### `:ObsidianKensaku`
+### `:Obsidian kensaku`
 
 Open the picker like `:Obsidian search`. You can search note **contents** with
 Romaji and do the same things as in `:Obsidian search`.
 
-### `:ObsidianQuickKensaku`
+Also available as `:ObsidianKensaku` (legacy; removed in v4.0.0).
+
+### `:Obsidian quick_kensaku`
 
 Open the picker like `:Obsidian quick_switch`. You can search notes by **file
 name** with Romaji. This is the kensaku-powered equivalent of
 `:Obsidian quick_switch`.
+
+Also available as `:ObsidianQuickKensaku` (legacy; removed in v4.0.0).
 
 ## Options
 
