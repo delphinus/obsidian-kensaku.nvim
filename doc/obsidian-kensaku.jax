@@ -16,9 +16,9 @@
 obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加するプラグイン
 です。以下の二つのコマンドを提供します。
 
-- |:ObsidianKensaku| ノートの内容を検索 (|:ObsidianSearch| 相当)
+- |:ObsidianKensaku| ノートの内容を検索 (`:Obsidian search` 相当)
 - |:ObsidianQuickKensaku| ファイル名でノートを検索
-  (|:ObsidianQuickSwitch| 相当)
+  (`:Obsidian quick_switch` 相当)
 
 ローマ字入力を luamigemo (純 Lua migemo エンジン) で正規表現に変換し、入力メ
 ソッドを切り替えずに日本語テキストを検索できます。外部バイナリや別プロセスは不
@@ -26,12 +26,19 @@ obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加�
 
   https://github.com/delphinus/luamigemo
 
+注意: v3 以降は obsidian-nvim/obsidian.nvim fork のみを対象としています。
+アーカイブされた epwalsh/obsidian.nvim をまだ使っている場合は v2 系
+(`version = "^2.0"`) を pin してください。
+
+  https://github.com/obsidian-nvim/obsidian.nvim
+  https://github.com/epwalsh/obsidian.nvim
+
 ==============================================================================
 必要なもの					 *obsidian-kensaku-requirements*
 
 - Neovim >= 0.10.0
-- epwalsh/obsidian.nvim
-    https://github.com/epwalsh/obsidian.nvim
+- obsidian-nvim/obsidian.nvim
+    https://github.com/obsidian-nvim/obsidian.nvim
 - delphinus/luamigemo (辞書内蔵 — 追加ダウンロード不要)
     https://github.com/delphinus/luamigemo
 - nvim-telescope/telescope.nvim
@@ -44,75 +51,55 @@ obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加�
 
 安定版を使う ~
 
-このプラグインは SemVer に従います。破壊的な変更を避けたい場合は、lazy.nvim の
-spec に `version = "*"` を追加してください。これにより `main` ブランチではなく、最
-新のタグ付きリリースが使用されます: >lua
+このプラグインは SemVer に従います。v3 系は obsidian-nvim/obsidian.nvim を、
+v2 系はアーカイブされた epwalsh/obsidian.nvim を対象とします。使い分けて pin
+してください: >lua
     {
       "delphinus/obsidian-kensaku.nvim",
-      version = "*",
+      version = "^3.0", -- obsidian-nvim/obsidian.nvim 向け
+      -- version = "^2.0", -- epwalsh/obsidian.nvim 向け
     }
 <
 
 lazy.nvim 設定例: >lua
     {
-      "epwalsh/obsidian.nvim",
+      "delphinus/obsidian-kensaku.nvim",
+      version = "^3.0",
+      cmd = { "ObsidianKensaku", "ObsidianQuickKensaku" },
       dependencies = {
-        "nvim-lua/plenary.nvim",
-        {
-          "delphinus/obsidian-kensaku.nvim",
-          version = "*",
-          dependencies = { { "delphinus/luamigemo", version = "*" } },
-        },
+        "obsidian-nvim/obsidian.nvim",
+        { "delphinus/luamigemo", version = "*" },
       },
-      opts = {
-        callbacks = {
-          post_setup = function(client)
-            require "obsidian-kensaku"(client)
-          end,
-        },
-      },
+      opts = {},
     }
 <
-重要: `opts.callbacks.post_setup` 内で呼び出す必要があります。
-
-オプションをカスタマイズする場合: >lua
-    {
-      "epwalsh/obsidian.nvim",
-      dependencies = {
-        "nvim-lua/plenary.nvim",
-        {
-          "delphinus/obsidian-kensaku.nvim",
-          version = "*",
-          dependencies = { { "delphinus/luamigemo", version = "*" } },
-          opts = {
-            picker = "egrepify",
-          },
-        },
-      },
-      opts = {
-        callbacks = {
-          post_setup = function(client)
-            require "obsidian-kensaku"(client)
-          end,
-        },
-      },
+`opts = {}` を指定すると lazy.nvim が自動で
+`require("obsidian-kensaku").setup()` を呼び出します。他のプラグインマネージャ
+を使う場合は手動で `setup` を呼んでください: >lua
+    require("obsidian-kensaku").setup {
+      picker = "egrepify",
     }
 <
+注意: v2 では obsidian.nvim の `opts.callbacks.post_setup` から
+`require "obsidian-kensaku"(client)` を呼び出す必要がありました。v3 ではこの
+手順は廃止され、`setup()` は単体で完結します。コマンド呼び出し時点までに
+obsidian.nvim が初期化されていれば動作するため、上記例のように
+`obsidian-nvim/obsidian.nvim` を `dependencies` に並べておけば十分です。
 
 ==============================================================================
 コマンド					     *obsidian-kensaku-commands*
 
 :ObsidianKensaku [query]				      *:ObsidianKensaku*
 
-	ローマ字で vault のノート内容を検索します。 |:ObsidianSearch| と同様に動
-	作しますが、ローマ字入力を正規表現に変換して日本語テキストをマッチング
-	します。[query] を指定すると初期検索クエリとして使用されます。
+	ローマ字で vault のノート内容を検索します。 `:Obsidian search` と同様
+	に動作しますが、ローマ字入力を正規表現に変換して日本語テキストをマッ
+	チングします。[query] を指定すると初期検索クエリとして使用されます。
 
 :ObsidianQuickKensaku					 *:ObsidianQuickKensaku*
 
-	ローマ字でファイル名からノートを検索します。 |:ObsidianQuickSwitch| と同
-	様に動作しますが、ローマ字入力を正規表現に変換して日本語テキストをマッ
-	チングします。
+	ローマ字でファイル名からノートを検索します。 `:Obsidian quick_switch`
+	と同様に動作しますが、ローマ字入力を正規表現に変換して日本語テキスト
+	をマッチングします。
 
 ==============================================================================
 オプション					      *obsidian-kensaku-options*

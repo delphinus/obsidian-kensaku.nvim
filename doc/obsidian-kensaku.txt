@@ -16,9 +16,9 @@ INTRODUCTION				         *obsidian-kensaku-introduction*
 obsidian-kensaku.nvim adds Romaji search capabilities to |obsidian.nvim|. It
 provides two commands:
 
-- |:ObsidianKensaku| searches note contents (like |:ObsidianSearch|)
+- |:ObsidianKensaku| searches note contents (like `:Obsidian search`)
 - |:ObsidianQuickKensaku| searches notes by file name
-  (like |:ObsidianQuickSwitch|)
+  (like `:Obsidian quick_switch`)
 
 Romaji input is converted to regex using luamigemo (a pure Lua migemo engine),
 enabling you to search Japanese text without switching input methods. No
@@ -26,12 +26,19 @@ external binaries or separate processes are required.
 
   https://github.com/delphinus/luamigemo
 
+NOTE: v3 onwards targets the obsidian-nvim/obsidian.nvim fork only. If you are
+still on the archived epwalsh/obsidian.nvim, pin to the v2 line
+(`version = "^2.0"`).
+
+  https://github.com/obsidian-nvim/obsidian.nvim
+  https://github.com/epwalsh/obsidian.nvim
+
 ==============================================================================
 REQUIREMENTS				         *obsidian-kensaku-requirements*
 
 - Neovim >= 0.10.0
-- epwalsh/obsidian.nvim
-    https://github.com/epwalsh/obsidian.nvim
+- obsidian-nvim/obsidian.nvim
+    https://github.com/obsidian-nvim/obsidian.nvim
 - delphinus/luamigemo (dictionary bundled — no extra download needed)
     https://github.com/delphinus/luamigemo
 - nvim-telescope/telescope.nvim
@@ -44,75 +51,53 @@ INSTALLATION				              *obsidian-kensaku-install*
 
 PINNING TO A STABLE VERSION ~
 
-This plugin uses SemVer. If you want to avoid breaking changes, you can pin to
-a stable release by adding `version = "*"` to your lazy.nvim spec; lazy.nvim will
-then use the latest tagged release instead of the `main` branch: >lua
+This plugin uses SemVer. The v3 line targets obsidian-nvim/obsidian.nvim; the
+v2 line targets the archived epwalsh/obsidian.nvim. Pin accordingly: >lua
     {
       "delphinus/obsidian-kensaku.nvim",
-      version = "*",
+      version = "^3.0", -- for obsidian-nvim/obsidian.nvim
+      -- version = "^2.0", -- for epwalsh/obsidian.nvim
     }
 <
 
 Example configuration with lazy.nvim: >lua
     {
-      "epwalsh/obsidian.nvim",
+      "delphinus/obsidian-kensaku.nvim",
+      version = "^3.0",
+      cmd = { "ObsidianKensaku", "ObsidianQuickKensaku" },
       dependencies = {
-        "nvim-lua/plenary.nvim",
-        {
-          "delphinus/obsidian-kensaku.nvim",
-          version = "*",
-          dependencies = { { "delphinus/luamigemo", version = "*" } },
-        },
+        "obsidian-nvim/obsidian.nvim",
+        { "delphinus/luamigemo", version = "*" },
       },
-      opts = {
-        callbacks = {
-          post_setup = function(client)
-            require "obsidian-kensaku"(client)
-          end,
-        },
-      },
+      opts = {},
     }
 <
-IMPORTANT: You must call this plugin in `opts.callbacks.post_setup`.
-
-If you want to customize options: >lua
-    {
-      "epwalsh/obsidian.nvim",
-      dependencies = {
-        "nvim-lua/plenary.nvim",
-        {
-          "delphinus/obsidian-kensaku.nvim",
-          version = "*",
-          dependencies = { { "delphinus/luamigemo", version = "*" } },
-          opts = {
-            picker = "egrepify",
-          },
-        },
-      },
-      opts = {
-        callbacks = {
-          post_setup = function(client)
-            require "obsidian-kensaku"(client)
-          end,
-        },
-      },
+`opts = {}` makes lazy.nvim call `require("obsidian-kensaku").setup()` for
+you. For other plugin managers, call `setup` manually: >lua
+    require("obsidian-kensaku").setup {
+      picker = "egrepify",
     }
 <
+NOTE: v2 required wiring the plugin from inside `opts.callbacks.post_setup`
+of obsidian.nvim. v3 drops that — `setup()` is self-contained, and
+obsidian.nvim only needs to have been initialized by the time you invoke a
+command. Listing `obsidian-nvim/obsidian.nvim` as a dependency (as above)
+handles that for you.
 
 ==============================================================================
 COMMANDS				             *obsidian-kensaku-commands*
 
 :ObsidianKensaku [query]				      *:ObsidianKensaku*
 
-	Search vault note contents with Romaji. Works like |:ObsidianSearch| but
-	converts Romaji input to regex for Japanese text matching. If [query]
-	is given, it is used as the initial search query.
+	Search vault note contents with Romaji. Works like `:Obsidian search`
+	but converts Romaji input to regex for Japanese text matching. If
+	[query] is given, it is used as the initial search query.
 
 :ObsidianQuickKensaku				         *:ObsidianQuickKensaku*
 
 	Search vault notes by file name with Romaji. Works like
-	|:ObsidianQuickSwitch| but converts Romaji input to regex for Japanese
-	text matching.
+	`:Obsidian quick_switch` but converts Romaji input to regex for
+	Japanese text matching.
 
 ==============================================================================
 OPTIONS					              *obsidian-kensaku-options*

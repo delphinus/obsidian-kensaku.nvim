@@ -4,19 +4,13 @@ local telescope_actions = require "telescope.actions"
 local actions_state = require "telescope.actions.state"
 
 local Path = require "obsidian.path"
-local abc = require "obsidian.abc"
-local TelescopePicker = require "obsidian.pickers._telescope"
+local Picker = require "obsidian.picker"
 local log = require "obsidian.log"
+local search = require "obsidian.search"
 
 local config = require "obsidian-kensaku.config"
 
----@class obsidian.pickers.KensakuPicker : obsidian.pickers.TelescopePicker
-local KensakuPicker = abc.new_class({
-  ---@diagnostic disable-next-line: unused-local
-  __tostring = function(self)
-    return "KensakuPicker()"
-  end,
-}, TelescopePicker)
+local M = {}
 
 ---@param prompt_bufnr integer
 ---@param keep_open boolean|?
@@ -43,8 +37,6 @@ local function get_query(prompt_bufnr, keep_open, initial_query)
       telescope_actions.close(prompt_bufnr)
     end
     return query
-  else
-    return nil
   end
 end
 
@@ -75,11 +67,9 @@ local function get_selected(prompt_bufnr, keep_open, allow_multiple)
   end
 end
 
+---@param map fun(modes: string[], key: string, callback: fun(prompt_bufnr: integer))
 ---@param opts { entry_key: string|?, callback: fun(path: string)|?, allow_multiple: boolean|?, query_mappings: obsidian.PickerMappingTable|?, selection_mappings: obsidian.PickerMappingTable|?, initial_query: string|? }
 local function attach_picker_mappings(map, opts)
-  -- Docs for telescope actions:
-  -- https://github.com/nvim-telescope/telescope.nvim/blob/master/lua/telescope/actions/init.lua
-
   local function entry_to_value(entry)
     if opts.entry_key then
       return entry[opts.entry_key]
@@ -127,21 +117,24 @@ local function attach_picker_mappings(map, opts)
   end
 end
 
----@param opts obsidian.PickerFindOpts|? Options.
-KensakuPicker.find_files = function(self, opts)
+---@param opts? { dir?: string|obsidian.Path, prompt_title?: string, callback?: fun(path: string), query_mappings?: obsidian.PickerMappingTable, selection_mappings?: obsidian.PickerMappingTable, no_default_mappings?: boolean }
+M.find_notes = function(opts)
   opts = opts or {}
 
-  local prompt_title = self:_build_prompt {
-    prompt_title = opts.prompt_title,
-    query_mappings = opts.query_mappings,
-    selection_mappings = opts.selection_mappings,
-  }
+  local query_mappings, selection_mappings
+  if not opts.no_default_mappings then
+    query_mappings = opts.query_mappings or Picker._note_query_mappings()
+    selection_mappings = opts.selection_mappings or Picker._note_selection_mappings()
+  else
+    query_mappings = opts.query_mappings
+    selection_mappings = opts.selection_mappings
+  end
 
   telescope_builtin.find_files {
-    prompt_title = prompt_title,
-    cwd = opts.dir and tostring(opts.dir) or tostring(self.client.dir),
+    prompt_title = opts.prompt_title or "Notes",
+    cwd = opts.dir and tostring(opts.dir) or tostring(Obsidian.dir),
     previewer = config.previewer and config.previewer() or nil,
-    find_command = self:_build_find_cmd(),
+    find_command = search.build_find_cmd(nil, nil, { include_non_markdown = false }),
     sorter = require "obsidian-kensaku.regex_sorter",
     on_input_filter_cb = function(prompt)
       local migemo = require "luamigemo"
@@ -153,32 +146,35 @@ KensakuPicker.find_files = function(self, opts)
       attach_picker_mappings(map, {
         entry_key = "path",
         callback = opts.callback,
-        query_mappings = opts.query_mappings,
-        selection_mappings = opts.selection_mappings,
+        query_mappings = query_mappings,
+        selection_mappings = selection_mappings,
       })
       return true
     end,
   }
 end
 
----@param opts obsidian.PickerGrepOpts|? Options.
-KensakuPicker.grep = function(self, opts)
+---@param opts? { dir?: string|obsidian.Path, query?: string, prompt_title?: string, callback?: fun(entry: table), query_mappings?: obsidian.PickerMappingTable, selection_mappings?: obsidian.PickerMappingTable, no_default_mappings?: boolean }
+M.grep_notes = function(opts)
   opts = opts or {}
 
-  local cwd = opts.dir and Path:new(opts.dir) or self.client.dir
+  local cwd = opts.dir and Path.new(opts.dir) or Obsidian.dir
 
-  local prompt_title = self:_build_prompt {
-    prompt_title = opts.prompt_title,
-    query_mappings = opts.query_mappings,
-    selection_mappings = opts.selection_mappings,
-  }
+  local query_mappings, selection_mappings
+  if not opts.no_default_mappings then
+    query_mappings = opts.query_mappings or Picker._note_query_mappings()
+    selection_mappings = opts.selection_mappings or Picker._note_selection_mappings()
+  else
+    query_mappings = opts.query_mappings
+    selection_mappings = opts.selection_mappings
+  end
 
   local attach_mappings = function(_, map)
     attach_picker_mappings(map, {
       entry_key = "path",
       callback = opts.callback,
-      query_mappings = opts.query_mappings,
-      selection_mappings = opts.selection_mappings,
+      query_mappings = query_mappings,
+      selection_mappings = selection_mappings,
       initial_query = opts.query,
     })
     return true
@@ -194,13 +190,14 @@ KensakuPicker.grep = function(self, opts)
   end
 
   local previewer = config.previewer and config.previewer() or nil
+  local prompt_title = opts.prompt_title or "Grep notes"
 
   if opts.query and string.len(opts.query) > 0 then
     telescope_builtin.grep_string {
       prompt_title = prompt_title,
       cwd = tostring(cwd),
       previewer = previewer,
-      vimgrep_arguments = self:_build_grep_cmd(),
+      vimgrep_arguments = search.build_grep_cmd { fixed_strings = false },
       search = config.query_filter(opts.query),
       attach_mappings = attach_mappings,
     }
@@ -210,7 +207,7 @@ KensakuPicker.grep = function(self, opts)
       prompt_title = prompt_title,
       cwd = tostring(cwd),
       previewer = previewer,
-      vimgrep_arguments = self:_build_grep_cmd(),
+      vimgrep_arguments = search.build_grep_cmd { fixed_strings = false },
       attach_mappings = attach_mappings,
       ---@param prompt string
       ---@return { prompt: string }
@@ -221,14 +218,4 @@ KensakuPicker.grep = function(self, opts)
   end
 end
 
-KensakuPicker._build_grep_cmd = function(self)
-  local search = require "obsidian.search"
-  local search_opts = search.SearchOpts.from_tbl {
-    sort_by = self.client.opts.sort_by,
-    sort_reversed = self.client.opts.sort_reversed,
-    smart_case = true,
-  }
-  return search.build_grep_cmd(search_opts)
-end
-
-return KensakuPicker
+return M
