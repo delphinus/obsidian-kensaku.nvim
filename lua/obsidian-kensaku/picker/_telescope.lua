@@ -199,6 +199,7 @@ M.grep_notes = function(opts)
       previewer = previewer,
       vimgrep_arguments = search.build_grep_cmd { fixed_strings = false },
       search = config.query_filter(opts.query),
+      use_regex = true,
       attach_mappings = attach_mappings,
     }
   else

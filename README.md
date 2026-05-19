@@ -33,11 +33,10 @@ migemo engine). No external binaries or separate processes are required.
 
 * [obsidian-nvim/obsidian.nvim][]
 * [delphinus/luamigemo][] (dictionary bundled — no extra download needed)
-* [nvim-telescope/telescope.nvim][]
-  - obsidian.nvim supports telescope, [ibhagwan/fzf-lua][],
-    [echasnovski/mini.pick][], and [folke/snacks.nvim][], but
-    obsidian-kensaku.nvim supports telescope.nvim only.
-* [fdschmidt93/telescope-egrepify.nvim][] _(optional)_
+* A picker supported by obsidian.nvim: [nvim-telescope/telescope.nvim][],
+  [ibhagwan/fzf-lua][], [folke/snacks.nvim][], or [echasnovski/mini.pick][].
+  See [Picker support](#picker-support) for the feature matrix.
+* [fdschmidt93/telescope-egrepify.nvim][] _(optional, telescope only)_
   - telescope has a bug (https://github.com/nvim-telescope/telescope.nvim/issues/2272)
     that it cannot highlight properly with string matched by regex. I recommend
     you to use telescope-egrepify for this.
@@ -47,6 +46,28 @@ migemo engine). No external binaries or separate processes are required.
 [echasnovski/mini.pick]: https://github.com/echasnovski/mini.pick
 [folke/snacks.nvim]: https://github.com/folke/snacks.nvim
 [fdschmidt93/telescope-egrepify.nvim]: https://github.com/fdschmidt93/telescope-egrepify.nvim
+
+## Picker support
+
+obsidian-kensaku dispatches to the picker currently selected by
+obsidian.nvim (`Obsidian.opts.picker.name`).
+
+| Picker | `:Obsidian kensaku <query>` (one-shot grep) | `:Obsidian kensaku` (live grep) | `:Obsidian quick_kensaku` (live filename) |
+| --- | --- | --- | --- |
+| telescope.nvim | ✓ | ✓ | ✓ |
+| fzf-lua | ✓ | planned (v3.4) | planned (v3.4) |
+| snacks.picker | ✓ | planned (v3.3) | planned (v3.3) |
+| mini.pick | ✓ | not planned | not planned |
+| default (`vim.ui.select`) | ✓ | n/a | n/a |
+
+For pickers other than telescope, the one-shot mode runs `rg` with the
+migemo-converted regex and feeds the matched results into the active
+picker via the host plugin's `obsidian.picker.pick()` API. This keeps the
+picker-specific code minimal.
+
+The live modes need picker-specific hooks (telescope's
+`on_input_filter_cb`, fzf-lua's `fzf_live`, snacks.picker's `finder`
+callback) and will land in follow-up releases.
 
 ## Install
 
@@ -66,23 +87,58 @@ This plugin uses [SemVer](https://semver.org/). The v3 line targets
 
 ### Add this plugin with your favorite plugin manager
 
+Recommended pattern is to list obsidian-kensaku.nvim as a dependency of
+obsidian.nvim and call `setup()` from obsidian.nvim's `post_setup` callback:
+
 ```lua
 -- example for lazy.nvim
 {
-  "delphinus/obsidian-kensaku.nvim",
-  version = "^3.1",
-  cmd = "Obsidian",
+  "obsidian-nvim/obsidian.nvim",
+  ft = "markdown",
+  cmd = { "Obsidian" },
   dependencies = {
-    "obsidian-nvim/obsidian.nvim",
-    { "delphinus/luamigemo", version = "*" },
+    {
+      "delphinus/obsidian-kensaku.nvim",
+      version = "^3.2",
+      dependencies = { { "delphinus/luamigemo", version = "*" } },
+    },
   },
-  opts = {},
+  opts = {
+    legacy_commands = false,
+    callbacks = {
+      post_setup = function()
+        require("obsidian-kensaku").setup {
+          -- picker = "egrepify",
+        }
+      end,
+    },
+    -- ... other obsidian.nvim opts ...
+  },
 }
 ```
 
-`cmd = "Obsidian"` makes lazy.nvim load both this plugin and obsidian.nvim on
-the first `:Obsidian ...` invocation, so the `:Obsidian kensaku` /
-`:Obsidian quick_kensaku` subcommands are registered before they are dispatched.
+Why this pattern instead of just `opts = {}` on the obsidian-kensaku.nvim spec?
+If both plugins claim the same lazy trigger (e.g., `cmd = "Obsidian"`),
+lazy.nvim's `handler.del` will delete the real `:Obsidian` user command
+after the last claiming plugin loads — even when it was just registered by
+obsidian.nvim's own `plugin/obsidian.lua`. Loading obsidian-kensaku.nvim as
+a dep avoids the trigger collision entirely.
+
+With this layout the legacy `:ObsidianKensaku` / `:ObsidianQuickKensaku`
+user commands only exist after the host plugin has been loaded for the
+first time (e.g., on the first markdown buffer or `:Obsidian ...`
+invocation). If you rely on the legacy forms before that, add them to a
+nested spec for obsidian-kensaku.nvim — they are kensaku-exclusive so
+they don't collide with `:Obsidian`:
+
+```lua
+{
+  "delphinus/obsidian-kensaku.nvim",
+  version = "^3.2",
+  cmd = { "ObsidianKensaku", "ObsidianQuickKensaku" },
+  dependencies = { { "delphinus/luamigemo", version = "*" } },
+},
+```
 
 `opts = {}` makes lazy.nvim call `require("obsidian-kensaku").setup()` for you.
 For other plugin managers, call `setup` manually:
@@ -152,6 +208,7 @@ grep-based search. Overrides the built-in migemo engine.
 * type: `"default"|"egrepify"`
 
 Use [fdschmidt93/telescope-egrepify.nvim][] instead of telescope's builtin.
+Telescope only; ignored when obsidian.nvim is using a non-telescope picker.
 
 ### `previewer`
 
@@ -159,8 +216,11 @@ Use [fdschmidt93/telescope-egrepify.nvim][] instead of telescope's builtin.
 * type: `fun(): table`
 
 A function that returns a custom telescope previewer. When set, it is used
-for all picker commands. For example, [delphinus/md-render.nvim][] can render
-Markdown in the preview window:
+for all picker commands. Telescope only; ignored when obsidian.nvim is
+using a non-telescope picker.
+
+For example, [delphinus/md-render.nvim][] can render Markdown in the preview
+window:
 
 ```lua
 {
