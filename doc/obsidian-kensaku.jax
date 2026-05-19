@@ -6,6 +6,7 @@
 はじめに					 |obsidian-kensaku-introduction|
 必要なもの					 |obsidian-kensaku-requirements|
 インストール					      |obsidian-kensaku-install|
+ピッカー対応状況			       |obsidian-kensaku-picker-support|
 コマンド					     |obsidian-kensaku-commands|
 オプション					      |obsidian-kensaku-options|
 ライセンス					      |obsidian-kensaku-license|
@@ -44,9 +45,17 @@ obsidian-kensaku.nvim は |obsidian.nvim| にローマ字検索機能を追加�
     https://github.com/obsidian-nvim/obsidian.nvim
 - delphinus/luamigemo (辞書内蔵 — 追加ダウンロード不要)
     https://github.com/delphinus/luamigemo
-- nvim-telescope/telescope.nvim
-    https://github.com/nvim-telescope/telescope.nvim
-- fdschmidt93/telescope-egrepify.nvim (任意、推奨)
+- obsidian.nvim がサポートするピッカーのいずれか:
+    nvim-telescope/telescope.nvim
+        https://github.com/nvim-telescope/telescope.nvim
+    ibhagwan/fzf-lua
+        https://github.com/ibhagwan/fzf-lua
+    folke/snacks.nvim (snacks.picker)
+        https://github.com/folke/snacks.nvim
+    echasnovski/mini.pick
+        https://github.com/echasnovski/mini.pick
+  機能対応の詳細は |obsidian-kensaku-picker-support| を参照。
+- fdschmidt93/telescope-egrepify.nvim (任意、telescope 利用時のみ)
     https://github.com/fdschmidt93/telescope-egrepify.nvim
 
 ==============================================================================
@@ -64,22 +73,50 @@ v2 系はアーカイブされた epwalsh/obsidian.nvim を対象とします。
     }
 <
 
-lazy.nvim 設定例: >lua
+推奨は obsidian-kensaku.nvim を obsidian.nvim の dependencies に並べ、
+obsidian.nvim の `post_setup` コールバックから `setup()` を呼ぶ形です: >lua
     {
-      "delphinus/obsidian-kensaku.nvim",
-      version = "^3.1",
-      cmd = "Obsidian",
+      "obsidian-nvim/obsidian.nvim",
+      ft = "markdown",
+      cmd = { "Obsidian" },
       dependencies = {
-        "obsidian-nvim/obsidian.nvim",
-        { "delphinus/luamigemo", version = "*" },
+        {
+          "delphinus/obsidian-kensaku.nvim",
+          version = "^3.2",
+          dependencies = { { "delphinus/luamigemo", version = "*" } },
+        },
       },
-      opts = {},
+      opts = {
+        legacy_commands = false,
+        callbacks = {
+          post_setup = function()
+            require("obsidian-kensaku").setup {
+              -- picker = "egrepify",
+            }
+          end,
+        },
+      },
     }
 <
-`cmd = "Obsidian"` を指定することで、 lazy.nvim は `:Obsidian ...` を
-初めて呼んだときに本プラグインと obsidian.nvim を両方ロードします。これに
-より `:Obsidian kensaku` / `:Obsidian quick_kensaku` サブコマンドが
-ディスパッチ前に登録された状態になります。
+
+両方のプラグインが同じ lazy.nvim トリガ (例: `cmd = "Obsidian"`) を
+claim していると、 lazy.nvim の `handler.del` が「最後にロードされたプラ
+グインの disable 時点」で `:Obsidian` ユーザコマンドを削除してしまいます。
+obsidian.nvim 本体の `plugin/obsidian.lua` が登録した real コマンドも巻き
+込まれて消えるので、 dep として読み込ませてトリガ衝突を避けます。
+
+この構成だと legacy 名の |:ObsidianKensaku| / |:ObsidianQuickKensaku| は
+host plugin が初めて読み込まれた後 (markdown バッファを開く、 `:Obsidian
+...` を呼ぶ等) でないと存在しません。 読み込み前から legacy 名で呼びたい
+場合は、 obsidian-kensaku.nvim 側に `cmd` を足してください。これらは
+kensaku 専用なので `:Obsidian` トリガと衝突しません: >lua
+    {
+      "delphinus/obsidian-kensaku.nvim",
+      version = "^3.2",
+      cmd = { "ObsidianKensaku", "ObsidianQuickKensaku" },
+      dependencies = { { "delphinus/luamigemo", version = "*" } },
+    }
+<
 `opts = {}` を指定すると lazy.nvim が自動で
 `require("obsidian-kensaku").setup()` を呼び出します。他のプラグインマネージャ
 を使う場合は手動で `setup` を呼んでください: >lua
@@ -92,6 +129,26 @@ lazy.nvim 設定例: >lua
 手順は廃止され、`setup()` は単体で完結します。コマンド呼び出し時点までに
 obsidian.nvim が初期化されていれば動作するため、上記例のように
 `obsidian-nvim/obsidian.nvim` を `dependencies` に並べておけば十分です。
+
+==============================================================================
+ピッカー対応状況			       *obsidian-kensaku-picker-support*
+
+obsidian-kensaku は obsidian.nvim が現在使用しているピッカー
+(`Obsidian.opts.picker.name`) に dispatch します。
+
+	ピッカー	  one-shot grep   live grep      live filename
+	----------------  --------------  -------------  ----------------
+	telescope.nvim	  対応		  対応		 対応
+	fzf-lua		  対応		  v3.4 で対応予定 v3.4 で対応予定
+	snacks.picker	  対応		  v3.3 で対応予定 v3.3 で対応予定
+	mini.pick	  対応		  未予定	 未予定
+	default		  対応		  n/a		 n/a
+
+telescope 以外では、 one-shot モードは `rg` を migemo 変換後の正規表現で実行
+し、ホストプラグインの `obsidian.picker.pick()` API にマッチ結果を流し込み
+ます。 live モードはピッカーごとの専用フック (telescope の
+`on_input_filter_cb`、 fzf-lua の `fzf_live`、 snacks.picker の `finder`
+コールバック) が必要なため、 後続リリースで段階的に追加します。
 
 ==============================================================================
 コマンド					     *obsidian-kensaku-commands*
@@ -154,14 +211,19 @@ picker ~
 	使用する telescope ピッカー。 `"egrepify"` に設定すると
 	telescope-egrepify.nvim を使用し、正規表現のハイライトが改善されます。
 
+	telescope 使用時のみ有効。 obsidian.nvim が他ピッカーを使っている場合は
+	無視されます。
+
 						    *obsidian-kensaku-previewer*
 previewer ~
 	型: `fun(): table`
 	デフォルト: `nil`
 
 	カスタム telescope プレビューアを返す関数。設定すると、すべてのピッ
-	カーコマンドで使用されます。例えば md-render.nvim を使うとプレビューで
-	Markdown を描画できます。
+	カーコマンドで使用されます。telescope 使用時のみ有効。 obsidian.nvim
+	が他ピッカーを使っている場合は無視されます。
+
+	例えば md-render.nvim を使うとプレビューで Markdown を描画できます。
 
 	  https://github.com/delphinus/md-render.nvim
 
