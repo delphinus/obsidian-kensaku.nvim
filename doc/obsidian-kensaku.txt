@@ -14,11 +14,14 @@ License					              |obsidian-kensaku-license|
 INTRODUCTION				         *obsidian-kensaku-introduction*
 
 obsidian-kensaku.nvim adds Romaji search capabilities to |obsidian.nvim|. It
-provides two commands:
+provides two subcommands of `:Obsidian`:
 
-- |:ObsidianKensaku| searches note contents (like `:Obsidian search`)
-- |:ObsidianQuickKensaku| searches notes by file name
+- `:Obsidian kensaku` searches note contents (like `:Obsidian search`)
+- `:Obsidian quick_kensaku` searches notes by file name
   (like `:Obsidian quick_switch`)
+
+The top-level user commands |:ObsidianKensaku| / |:ObsidianQuickKensaku| are
+kept as aliases and will be removed in v4.0.0.
 
 Romaji input is converted to regex using luamigemo (a pure Lua migemo engine),
 enabling you to search Japanese text without switching input methods. No
@@ -63,8 +66,8 @@ v2 line targets the archived epwalsh/obsidian.nvim. Pin accordingly: >lua
 Example configuration with lazy.nvim: >lua
     {
       "delphinus/obsidian-kensaku.nvim",
-      version = "^3.0",
-      cmd = { "ObsidianKensaku", "ObsidianQuickKensaku" },
+      version = "^3.1",
+      cmd = "Obsidian",
       dependencies = {
         "obsidian-nvim/obsidian.nvim",
         { "delphinus/luamigemo", version = "*" },
@@ -72,6 +75,10 @@ Example configuration with lazy.nvim: >lua
       opts = {},
     }
 <
+`cmd = "Obsidian"` makes lazy.nvim load both this plugin and obsidian.nvim
+on the first `:Obsidian ...` invocation, so the `:Obsidian kensaku` /
+`:Obsidian quick_kensaku` subcommands are registered before they are
+dispatched.
 `opts = {}` makes lazy.nvim call `require("obsidian-kensaku").setup()` for
 you. For other plugin managers, call `setup` manually: >lua
     require("obsidian-kensaku").setup {
@@ -87,17 +94,21 @@ handles that for you.
 ==============================================================================
 COMMANDS				             *obsidian-kensaku-commands*
 
-:ObsidianKensaku [query]				      *:ObsidianKensaku*
+:Obsidian kensaku [query]				      *:ObsidianKensaku*
 
 	Search vault note contents with Romaji. Works like `:Obsidian search`
 	but converts Romaji input to regex for Japanese text matching. If
 	[query] is given, it is used as the initial search query.
 
-:ObsidianQuickKensaku				         *:ObsidianQuickKensaku*
+	Also available as `:ObsidianKensaku` (legacy; removed in v4.0.0).
+
+:Obsidian quick_kensaku				         *:ObsidianQuickKensaku*
 
 	Search vault notes by file name with Romaji. Works like
 	`:Obsidian quick_switch` but converts Romaji input to regex for
 	Japanese text matching.
+
+	Also available as `:ObsidianQuickKensaku` (legacy; removed in v4.0.0).
 
 ==============================================================================
 OPTIONS					              *obsidian-kensaku-options*
