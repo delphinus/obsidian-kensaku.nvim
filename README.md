@@ -2,16 +2,23 @@
 
 <img alt="demo-egrepify" width="640" src="demo-egrepify.png">
 
-Search the vault with Romaji powered by [epwalsh/obsidian.nvim][].
+Search the vault with Romaji powered by [obsidian-nvim/obsidian.nvim][].
 
-ローマ字を使って [epwalsh/obsidian.nvim][] の文書を検索します。
+ローマ字を使って [obsidian-nvim/obsidian.nvim][] の文書を検索します。
+
+[obsidian-nvim/obsidian.nvim]: https://github.com/obsidian-nvim/obsidian.nvim
+
+> [!IMPORTANT]
+> v3 onwards targets the [obsidian-nvim/obsidian.nvim][] fork only. If you are
+> still on the archived [epwalsh/obsidian.nvim][], pin to the v2 line
+> (`version = "^2.0"`).
 
 [epwalsh/obsidian.nvim]: https://github.com/epwalsh/obsidian.nvim
 
 ## What's this?
 
 This plugin adds a command `:ObsidianKensaku`. This command looks like
-`:ObsidianSearch` but you can use Romaji to search the vault.
+`:Obsidian search` but you can use Romaji to search the vault.
 
 Romaji input is converted to regex using [delphinus/luamigemo][] (a pure Lua
 migemo engine). No external binaries or separate processes are required.
@@ -20,12 +27,12 @@ migemo engine). No external binaries or separate processes are required.
 
 ## Requirements
 
-* [epwalsh/obsidian.nvim][]
+* [obsidian-nvim/obsidian.nvim][]
 * [delphinus/luamigemo][] (dictionary bundled — no extra download needed)
 * [nvim-telescope/telescope.nvim][]
-  - obsidian.nvim supports telescope, [ibhagwan/fzf-lua][] and
-    [echasnovski/mini.pick][], but obsidian-kensaku.nvim supports telescope.nvim
-    only.
+  - obsidian.nvim supports telescope, [ibhagwan/fzf-lua][],
+    [echasnovski/mini.pick][], and [folke/snacks.nvim][], but
+    obsidian-kensaku.nvim supports telescope.nvim only.
 * [fdschmidt93/telescope-egrepify.nvim][] _(optional)_
   - telescope has a bug (https://github.com/nvim-telescope/telescope.nvim/issues/2272)
     that it cannot highlight properly with string matched by regex. I recommend
@@ -34,20 +41,22 @@ migemo engine). No external binaries or separate processes are required.
 [nvim-telescope/telescope.nvim]: https://github.com/nvim-telescope/telescope.nvim
 [ibhagwan/fzf-lua]: https://github.com/ibhagwan/fzf-lua
 [echasnovski/mini.pick]: https://github.com/echasnovski/mini.pick
+[folke/snacks.nvim]: https://github.com/folke/snacks.nvim
 [fdschmidt93/telescope-egrepify.nvim]: https://github.com/fdschmidt93/telescope-egrepify.nvim
 
 ## Install
 
 ### Pinning to a stable version
 
-This plugin uses [SemVer](https://semver.org/). If you want to avoid breaking
-changes, add `version = "*"` to your lazy.nvim spec. This tells lazy.nvim to
-use the latest tagged release instead of the `main` branch:
+This plugin uses [SemVer](https://semver.org/). The v3 line targets
+[obsidian-nvim/obsidian.nvim][]; the v2 line targets the archived
+[epwalsh/obsidian.nvim][]. Pin accordingly:
 
 ```lua
 {
   "delphinus/obsidian-kensaku.nvim",
-  version = "*",
+  version = "^3.0", -- for obsidian-nvim/obsidian.nvim
+  -- version = "^2.0", -- for epwalsh/obsidian.nvim
 }
 ```
 
@@ -56,74 +65,44 @@ use the latest tagged release instead of the `main` branch:
 ```lua
 -- example for lazy.nvim
 {
-  "epwalsh/obsidian.nvim",
+  "delphinus/obsidian-kensaku.nvim",
+  version = "^3.0",
+  cmd = { "ObsidianKensaku", "ObsidianQuickKensaku" },
   dependencies = {
-    "nvim-lua/plenary.nvim",
-    {
-      "delphinus/obsidian-kensaku.nvim",
-      version = "*",
-      dependencies = { { "delphinus/luamigemo", version = "*" } },
-    },
+    "obsidian-nvim/obsidian.nvim",
+    { "delphinus/luamigemo", version = "*" },
   },
-  opts = {
-    callbacks = {
-      post_setup = function(client)
-        require "obsidian-kensaku"(client),
-      end,
-    },
-  },
+  opts = {},
 }
 ```
 
-> [!IMPORTANT]
-> Remember to call this plugin in `opts.callbacks.post_setup`.
-
-If you want to customize options, call `setup` or write them in `opts` (for
-[lazy.nvim](https://github.com/folke/lazy.nvim)).
+`opts = {}` makes lazy.nvim call `require("obsidian-kensaku").setup()` for you.
+For other plugin managers, call `setup` manually:
 
 ```lua
--- example for lazy.nvim
-{
-  "epwalsh/obsidian.nvim",
-  dependencies = {
-    "nvim-lua/plenary.nvim",
-    {
-      "delphinus/obsidian-kensaku.nvim",
-      version = "*",
-      dependencies = { { "delphinus/luamigemo", version = "*" } },
-      opts = {
-        picker = "egrepify",
-      },
-      --- for other plugin managers
-      -- config = function()
-      --   require("obsidian-kensaku").setup {
-      --     picker = "egrepify",
-      --   }
-      -- end,
-    },
-  },
-  opts = {
-    callbacks = {
-      post_setup = function(client)
-        require "obsidian-kensaku"(client),
-      end,
-    },
-  },
+require("obsidian-kensaku").setup {
+  picker = "egrepify",
 }
 ```
+
+> [!NOTE]
+> v2 required wiring the plugin from inside `opts.callbacks.post_setup` of
+> obsidian.nvim. v3 drops that — `setup()` is self-contained, and obsidian.nvim
+> only needs to have been initialized by the time you invoke a command. Listing
+> `obsidian-nvim/obsidian.nvim` as a dependency (as above) handles that for you.
 
 ## Commands
 
 ### `:ObsidianKensaku`
 
-Open the picker like `:ObsidianSearch`. You can search note **contents** with
-Romaji and do the same things as in `:ObsidianSearch`.
+Open the picker like `:Obsidian search`. You can search note **contents** with
+Romaji and do the same things as in `:Obsidian search`.
 
 ### `:ObsidianQuickKensaku`
 
-Open the picker like `:ObsidianQuickSwitch`. You can search notes by **file
+Open the picker like `:Obsidian quick_switch`. You can search notes by **file
 name** with Romaji. This is the kensaku-powered equivalent of
-`:ObsidianQuickSwitch`.
+`:Obsidian quick_switch`.
 
 ## Options
 

@@ -1,30 +1,23 @@
 ---@class obsidian-kensaku
 ---@field setup_called boolean
 ---@field setup fun(opts?: obsidian-kensaku.config.SetupOpts)
----@overload fun(client: obsidian.Client)
 
 return setmetatable({ setup_called = false }, {
-  ---@param client obsidian.Client
-  __call = function(self, client)
-    if not self.setup_called then
-      self.setup()
-    end
-    vim.api.nvim_create_user_command("ObsidianKensaku", function(data)
-      local picker = require("obsidian-kensaku.picker").new(client)
-      picker:grep_notes { query = data.args }
-    end, { nargs = "?", desc = "Search vault with migemo" })
-    vim.api.nvim_create_user_command("ObsidianQuickKensaku", function(data)
-      local picker = require("obsidian-kensaku.picker").new(client)
-      picker:find_notes()
-    end, { nargs = "?", desc = "Search vault with migemo" })
-  end,
   ---@param key string
   __index = function(self, key)
     if key == "setup" then
-      ---@param opts obsidian-kensaku.config.SetupOpts
+      ---@param opts? obsidian-kensaku.config.SetupOpts
       return function(opts)
         require("obsidian-kensaku.config").normalize(opts)
-        self.setup_called = true
+        if not self.setup_called then
+          vim.api.nvim_create_user_command("ObsidianKensaku", function(data)
+            require("obsidian-kensaku.picker").grep_notes { query = data.args }
+          end, { nargs = "?", desc = "Search vault with migemo" })
+          vim.api.nvim_create_user_command("ObsidianQuickKensaku", function()
+            require("obsidian-kensaku.picker").find_notes()
+          end, { nargs = 0, desc = "Search vault filenames with migemo" })
+          self.setup_called = true
+        end
       end
     end
     error("Invalid key: " .. key)
