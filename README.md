@@ -56,18 +56,19 @@ obsidian.nvim (`Obsidian.opts.picker.name`).
 | --- | --- | --- | --- |
 | telescope.nvim | ✓ | ✓ | ✓ |
 | snacks.picker | ✓ | ✓ | ✓ |
-| fzf-lua | ✓ | planned (v3.5) | planned (v3.5) |
+| fzf-lua | ✓ | ✓ | ✓ |
 | mini.pick | ✓ | not planned | not planned |
 | default (`vim.ui.select`) | ✓ | n/a | n/a |
 
-For pickers other than telescope / snacks.picker, the one-shot mode runs
-`rg` with the migemo-converted regex and feeds the matched results into
-the active picker via the host plugin's `obsidian.picker.pick()` API.
-This keeps the picker-specific code minimal.
+For pickers other than telescope / snacks.picker / fzf-lua, the one-shot
+mode runs `rg` with the migemo-converted regex and feeds the matched
+results into the active picker via the host plugin's
+`obsidian.picker.pick()` API. This keeps the picker-specific code
+minimal.
 
-The live modes need picker-specific hooks: telescope uses
-`on_input_filter_cb`, snacks.picker uses a custom `finder` callback. The
-fzf-lua live integration (`fzf_live`) is planned for v3.5.
+The live modes use picker-specific hooks: telescope's
+`on_input_filter_cb`, snacks.picker's custom `finder` callback, and
+fzf-lua's `fzf_live` shell-command generator.
 
 ## Install
 
