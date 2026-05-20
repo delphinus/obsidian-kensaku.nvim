@@ -140,17 +140,17 @@ obsidian-kensaku は obsidian.nvim が現在使用しているピッカー
 	----------------  --------------  -------------  ----------------
 	telescope.nvim	  対応		  対応		 対応
 	snacks.picker	  対応		  対応		 対応
-	fzf-lua		  対応		  v3.5 で対応予定 v3.5 で対応予定
+	fzf-lua		  対応		  対応		 対応
 	mini.pick	  対応		  未予定	 未予定
 	default		  対応		  n/a		 n/a
 
-telescope / snacks.picker 以外では、 one-shot モードは `rg` を migemo 変換後の
-正規表現で実行し、ホストプラグインの `obsidian.picker.pick()` API にマッチ
-結果を流し込みます。
+telescope / snacks.picker / fzf-lua 以外では、 one-shot モードは `rg` を migemo
+変換後の正規表現で実行し、 ホストプラグインの `obsidian.picker.pick()` API に
+マッチ結果を流し込みます。
 
-live モードはピッカーごとの専用フックが必要です: telescope は
-`on_input_filter_cb`、 snacks.picker は専用の `finder` コールバックを使い
-ます。 fzf-lua の live 対応 (`fzf_live`) は v3.5 で追加予定です。
+live モードはピッカーごとの専用フックを使います: telescope は
+`on_input_filter_cb`、 snacks.picker は専用の `finder` コールバック、 fzf-lua
+は `fzf_live` のシェルコマンド生成関数を使います。
 
 ==============================================================================
 コマンド					     *obsidian-kensaku-commands*
