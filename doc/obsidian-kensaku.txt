@@ -139,17 +139,18 @@ obsidian.nvim (`Obsidian.opts.picker.name`).
 	Picker		  one-shot grep   live grep      live filename
 	----------------  --------------  -------------  ----------------
 	telescope.nvim	  yes		  yes		 yes
-	fzf-lua		  yes		  planned (3.4)  planned (3.4)
-	snacks.picker	  yes		  planned (3.3)  planned (3.3)
+	snacks.picker	  yes		  yes		 yes
+	fzf-lua		  yes		  planned (3.5)  planned (3.5)
 	mini.pick	  yes		  not planned	 not planned
 	default		  yes		  n/a		 n/a
 
-For pickers other than telescope, the one-shot mode runs `rg` with the
-migemo-converted regex and feeds the matched results into the active
-picker via the host plugin's `obsidian.picker.pick()` API. The live modes
-need picker-specific hooks (telescope's `on_input_filter_cb`, fzf-lua's
-`fzf_live`, snacks.picker's `finder` callback) and will land in
-follow-up releases.
+For pickers other than telescope / snacks.picker, the one-shot mode runs
+`rg` with the migemo-converted regex and feeds the matched results into
+the active picker via the host plugin's `obsidian.picker.pick()` API.
+
+The live modes need picker-specific hooks: telescope uses
+`on_input_filter_cb`, snacks.picker uses a custom `finder` callback. The
+fzf-lua live integration (`fzf_live`) is planned for v3.5.
 
 ==============================================================================
 COMMANDS				             *obsidian-kensaku-commands*

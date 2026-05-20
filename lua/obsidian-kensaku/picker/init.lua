@@ -72,9 +72,13 @@ M.find_notes = function(opts)
     require("obsidian-kensaku.picker._telescope").find_notes(opts)
     return
   end
+  if name == PickerName.snacks then
+    require("obsidian-kensaku.picker._snacks").find_notes(opts)
+    return
+  end
   log.err(
-    "obsidian-kensaku: filename search with migemo is currently telescope.nvim only "
-      .. "(active picker: %s). Support for fzf-lua / snacks.picker is planned.",
+    "obsidian-kensaku: filename search with migemo is currently telescope.nvim and "
+      .. "snacks.picker only (active picker: %s). Support for fzf-lua is planned.",
     name or "default"
   )
 end
@@ -89,11 +93,16 @@ M.grep_notes = function(opts)
     return
   end
 
+  if name == PickerName.snacks and not (opts.query and #opts.query > 0) then
+    require("obsidian-kensaku.picker._snacks").grep_notes(opts)
+    return
+  end
+
   if not (opts.query and #opts.query > 0) then
     log.err(
-      "obsidian-kensaku: live grep with migemo is currently telescope.nvim only "
-        .. "(active picker: %s). Pass an initial query (`:Obsidian kensaku <query>`) "
-        .. "to use the one-shot mode supported by all pickers.",
+      "obsidian-kensaku: live grep with migemo is currently telescope.nvim and "
+        .. "snacks.picker only (active picker: %s). Pass an initial query "
+        .. "(`:Obsidian kensaku <query>`) to use the one-shot mode supported by all pickers.",
       name or "default"
     )
     return
