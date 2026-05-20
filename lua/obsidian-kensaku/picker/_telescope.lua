@@ -139,7 +139,10 @@ M.find_notes = function(opts)
     on_input_filter_cb = function(prompt)
       local migemo = require "luamigemo"
       local m = migemo.get(config.dict_path)
-      local result = m:query(prompt, migemo.RXOP_VIM)
+      -- FLAG_NFD: filenames returned by macOS APFS / iCloud Drive arrive in
+      -- NFD form (e.g. ブ → フ + U+3099), so the regex must tolerate both
+      -- composed and decomposed kana.
+      local result = m:query(prompt, migemo.RXOP_VIM, migemo.FLAG_NFD)
       return { prompt = migemo.VIM_PREFIX .. result }
     end,
     attach_mappings = function(_, map)
