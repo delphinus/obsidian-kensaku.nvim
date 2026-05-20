@@ -139,16 +139,18 @@ obsidian-kensaku は obsidian.nvim が現在使用しているピッカー
 	ピッカー	  one-shot grep   live grep      live filename
 	----------------  --------------  -------------  ----------------
 	telescope.nvim	  対応		  対応		 対応
-	fzf-lua		  対応		  v3.4 で対応予定 v3.4 で対応予定
-	snacks.picker	  対応		  v3.3 で対応予定 v3.3 で対応予定
+	snacks.picker	  対応		  対応		 対応
+	fzf-lua		  対応		  v3.5 で対応予定 v3.5 で対応予定
 	mini.pick	  対応		  未予定	 未予定
 	default		  対応		  n/a		 n/a
 
-telescope 以外では、 one-shot モードは `rg` を migemo 変換後の正規表現で実行
-し、ホストプラグインの `obsidian.picker.pick()` API にマッチ結果を流し込み
-ます。 live モードはピッカーごとの専用フック (telescope の
-`on_input_filter_cb`、 fzf-lua の `fzf_live`、 snacks.picker の `finder`
-コールバック) が必要なため、 後続リリースで段階的に追加します。
+telescope / snacks.picker 以外では、 one-shot モードは `rg` を migemo 変換後の
+正規表現で実行し、ホストプラグインの `obsidian.picker.pick()` API にマッチ
+結果を流し込みます。
+
+live モードはピッカーごとの専用フックが必要です: telescope は
+`on_input_filter_cb`、 snacks.picker は専用の `finder` コールバックを使い
+ます。 fzf-lua の live 対応 (`fzf_live`) は v3.5 で追加予定です。
 
 ==============================================================================
 コマンド					     *obsidian-kensaku-commands*
