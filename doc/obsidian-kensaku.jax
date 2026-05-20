@@ -82,7 +82,7 @@ obsidian.nvim の `post_setup` コールバックから `setup()` を呼ぶ形�
       dependencies = {
         {
           "delphinus/obsidian-kensaku.nvim",
-          version = "^3.2",
+          version = "*",
           dependencies = { { "delphinus/luamigemo", version = "*" } },
         },
       },
@@ -112,7 +112,7 @@ host plugin が初めて読み込まれた後 (markdown バッファを開く、
 kensaku 専用なので `:Obsidian` トリガと衝突しません: >lua
     {
       "delphinus/obsidian-kensaku.nvim",
-      version = "^3.2",
+      version = "*",
       cmd = { "ObsidianKensaku", "ObsidianQuickKensaku" },
       dependencies = { { "delphinus/luamigemo", version = "*" } },
     }

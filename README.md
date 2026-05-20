@@ -100,7 +100,7 @@ obsidian.nvim and call `setup()` from obsidian.nvim's `post_setup` callback:
   dependencies = {
     {
       "delphinus/obsidian-kensaku.nvim",
-      version = "^3.2",
+      version = "*",
       dependencies = { { "delphinus/luamigemo", version = "*" } },
     },
   },
@@ -135,7 +135,7 @@ they don't collide with `:Obsidian`:
 ```lua
 {
   "delphinus/obsidian-kensaku.nvim",
-  version = "^3.2",
+  version = "*",
   cmd = { "ObsidianKensaku", "ObsidianQuickKensaku" },
   dependencies = { { "delphinus/luamigemo", version = "*" } },
 },

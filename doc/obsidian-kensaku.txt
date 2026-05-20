@@ -82,7 +82,7 @@ callback: >lua
       dependencies = {
         {
           "delphinus/obsidian-kensaku.nvim",
-          version = "^3.2",
+          version = "*",
           dependencies = { { "delphinus/luamigemo", version = "*" } },
         },
       },
@@ -113,7 +113,7 @@ invocation). If you rely on the legacy forms before that, add them as
 kensaku-exclusive so they don't collide with `:Obsidian`: >lua
     {
       "delphinus/obsidian-kensaku.nvim",
-      version = "^3.2",
+      version = "*",
       cmd = { "ObsidianKensaku", "ObsidianQuickKensaku" },
       dependencies = { { "delphinus/luamigemo", version = "*" } },
     }
