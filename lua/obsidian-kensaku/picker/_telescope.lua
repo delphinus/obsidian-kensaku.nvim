@@ -12,6 +12,21 @@ local config = require "obsidian-kensaku.config"
 
 local M = {}
 
+--- Build the `rg --files` command used as telescope's `find_command`.
+---
+--- obsidian.nvim#916 dropped the `obsidian.search.build_find_cmd` re-export
+--- (ripgrep became optional for finding files) and changed the backend
+--- signature from `(path, term, opts)` to `(path, opts)`. Dispatch on the
+--- re-export so both the old and the new layout work.
+---@return string[]
+local function build_find_cmd()
+  local opts = { include_non_markdown = false }
+  if search.build_find_cmd then
+    return search.build_find_cmd(nil, nil, opts)
+  end
+  return require("obsidian.search.ripgrep").build_find_cmd(nil, opts)
+end
+
 ---@param prompt_bufnr integer
 ---@param keep_open boolean|?
 ---@return table|?
@@ -134,7 +149,7 @@ M.find_notes = function(opts)
     prompt_title = opts.prompt_title or "Notes",
     cwd = opts.dir and tostring(opts.dir) or tostring(Obsidian.dir),
     previewer = config.previewer and config.previewer() or nil,
-    find_command = search.build_find_cmd(nil, nil, { include_non_markdown = false }),
+    find_command = build_find_cmd(),
     sorter = require "obsidian-kensaku.regex_sorter",
     on_input_filter_cb = function(prompt)
       local migemo = require "luamigemo"
