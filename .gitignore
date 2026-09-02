@@ -73,7 +73,7 @@ tags
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
 
 # Thumbnails
 ._*
@@ -93,3 +93,9 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+### Not from gibo
+
+# Help tags for doc/obsidian-kensaku.jax. gibo's Vim.gitignore only covers
+# `tags`, so :helptags leaves this one showing up as untracked.
+tags-ja
