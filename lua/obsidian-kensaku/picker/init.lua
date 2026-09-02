@@ -1,9 +1,17 @@
 local Picker = require "obsidian.picker"
-local PickerName = require("obsidian.config").Picker
 local log = require "obsidian.log"
 local api = require "obsidian.api"
 
 local config = require "obsidian-kensaku.config"
+
+--- The `obsidian.config.Picker` enum.
+---
+--- obsidian.nvim#936 moved the runtime enums out of `obsidian.config` into
+--- `obsidian.types`, so `require("obsidian.config").Picker` became `nil` and
+--- every command died with "attempt to index upvalue 'PickerName'". Prefer the
+--- new location and fall back to the old one for older obsidian.nvim.
+---@type table<string, string>
+local PickerName = require("obsidian.types").Picker or require("obsidian.config").Picker
 
 local M = {}
 
@@ -16,8 +24,8 @@ local function active_picker_name()
   for _, info in ipairs {
     { PickerName.telescope, "telescope.builtin" },
     { PickerName.fzf_lua, "fzf-lua" },
-    { PickerName.snacks, "snacks.picker" },
     { PickerName.mini, "mini.pick" },
+    { PickerName.snacks, "snacks.picker" },
   } do
     if pcall(require, info[2]) then
       return info[1]
